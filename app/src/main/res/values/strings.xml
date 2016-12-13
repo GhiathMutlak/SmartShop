@@ -9,4 +9,8 @@
     <string name="title_activity_tabbed">Tabbed Activity</string>
     <string name="section_format">Hello World from section: %1$d</string>
 
+    <string name="favourites">Favourites</string>
+    <string name="share">Share</string>
+    <string name="help">Help</string>
+
 </resources>
