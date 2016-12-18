@@ -21,9 +21,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.applefish.smartshop.R;
@@ -35,28 +34,13 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-
-import android.app.ProgressDialog;
-import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
-
-
-import android.widget.Button;
+import java.util.ArrayList;
 
 import static com.applefish.smartshop.R.id.container;
-import static com.applefish.smartshop.R.id.imageView;
 
 
 public class MainActivity extends AppCompatActivity
@@ -77,19 +61,18 @@ public class MainActivity extends AppCompatActivity
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager viewPager;
-     String myJSON;
+
+    String jsonResult;
 
     private static final String TAG_RESULTS="result";
     private static final String TAG_ID = "id";
     private static final String TAG_NAME = "storeName";
     private static final String TAG_ADD ="logoUrl";
-    private static String store_url = "http://192.168.1.2/smartshop/retrivelogo.php";
-    JSONArray store = null;
-    ArrayList<HashMap<String, String>> storeList;
-   static ArrayList<Store> storeImageList;
+    private static final String STORES_URL = "http://192.168.1.2/smartshop/retrivelogo.php";
 
-    //------------------
-    static  Bitmap bitmapb;
+    private static ArrayList<Store> storesList;
+    private static JSONArray storesArray = null;
+
 
 
     @Override
@@ -99,15 +82,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -130,15 +104,10 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        storesList = new ArrayList<>();
 
-        //get stores data---------------------
-        storeList = new ArrayList<HashMap<String,String>>();
-        storeImageList = new ArrayList<Store>();
-        Toast.makeText(getApplicationContext(),"before get",Toast.LENGTH_LONG).show();
-        //getData();
-        getJSON("http://192.168.1.2/smartshop/retrivelogo.php");
-        Toast.makeText(getApplicationContext(),"after get",Toast.LENGTH_LONG).show();
-        //----------------------------------------
+        getJSON( STORES_URL );
+
     }
 
     @Override
@@ -151,27 +120,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }*/
 
-   /* @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }*/
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -181,7 +130,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_favourites) {
-            // Handle the camera action
+
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_help) {
@@ -214,33 +163,31 @@ public class MainActivity extends AppCompatActivity
          * number.
          */
         public static MainActivity.PlaceholderFragment newInstance(int sectionNumber) {
+
             MainActivity.PlaceholderFragment fragment = new MainActivity.PlaceholderFragment();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);
             return fragment;
+
         }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+
             View rootView = inflater.inflate(R.layout.fragment_tabbed, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
 
             LinearLayout layout = (LinearLayout) rootView.findViewById(R.id.layoutStore);
-                   if(storeImageList.size()>=2)
-                   {
-                       for (int i=0;i<storeImageList.size();i++){
-                           ImageButton imageButton=new ImageButton(getContext());
 
-                           imageButton.setImageBitmap(storeImageList.get(i).getLogo());
+                   if( getArguments().getInt(ARG_SECTION_NUMBER) == 3 ) {
 
+                       for ( int i=0; i < storesList.size(); i++ ){
+                           ImageView imageButton = new ImageButton(getContext());
+                           imageButton.setImageBitmap(storesList.get(i).getLogo());
 
                            layout.addView(imageButton);
-
                        }
-
                    }
 
             return rootView;
@@ -288,14 +235,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void getJSON(String url) {
-        class GetJSON extends AsyncTask<String, Void, String>{
-            ProgressDialog loading;
 
-//           @Override
-//            protected void onPreExecute() {
-//                super.onPreExecute();
-//                loading = ProgressDialog.show(MainActivity.this, "Please Wait...",null,true,true);
-//            }
+
+        class GetJSON extends AsyncTask<String, Void, String> {
+
+
+
             @Override
             protected String doInBackground(String... params) {
 
@@ -303,16 +248,15 @@ public class MainActivity extends AppCompatActivity
                 String result ="";
                         BufferedReader bufferedReader = null;
                 try {
+
                     URL url = new URL(uri);
                     HttpURLConnection con = (HttpURLConnection) url.openConnection();
                     StringBuilder sb = new StringBuilder();
 
                     int status = con.getResponseCode();
 
-                    if (status != HttpURLConnection.HTTP_OK)
-                        Log.i("getJSON", "doInBackground: " +status);
-                    else
-                        Log.i("getJSON", "doInBackground: " +status);
+
+                    Log.i("getJSON", "doInBackground: " +status);
 
                     bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
                     String json;
@@ -331,181 +275,106 @@ public class MainActivity extends AppCompatActivity
             @Override
             protected void onPostExecute(String result) {
                super.onPostExecute(result);
-//               loading.dismiss();
-                myJSON=result;
-                Toast.makeText(getApplicationContext(),"Json>>"+myJSON,Toast.LENGTH_LONG).show();
-                showList();
+                jsonResult = result;
+                getAllImages();
             }
         }
         GetJSON gj = new GetJSON();
         gj.execute(url);
     }
 
-    /////////////
-    public  void getData(){
-        Toast.makeText(getApplicationContext(),"getData",Toast.LENGTH_LONG).show();
-        class GetDataJSON extends AsyncTask<String, Void, String> {
 
-            @Override
-            protected String doInBackground(String... params) {
-                DefaultHttpClient httpclient = new DefaultHttpClient(new BasicHttpParams());
-                HttpPost httppost = new HttpPost("http://192.168.1.2/smartshop/retrivelogo.php");
+    public void getAllImages() {
 
-                // Depends on your web service
-             //   httppost.setHeader("Content-type", "application/json");
-
-                InputStream inputStream = null;
-                String result = "{\"result\":[{\"id\":\"1\",\"storeName\":\"Mercedes company\",\"logoUrl\":\"http:\\/\\/localhost\\/smartshop\\/logo\\/Mercedeslogo.jpg\"},{\"id\":\"2\",\"storeName\":\"Lexus company\",\"logoUrl\":\"http:\\/\\/localhost\\/smartshop\\/logo\\/Lexuslogo.jpg\"}]}";
-                try {
-                    HttpResponse response = httpclient.execute(httppost);
-                    HttpEntity entity = response.getEntity();
-
-                    inputStream = entity.getContent();
-                    // json is UTF-8 by default
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"), 8);
-                    StringBuilder sb = new StringBuilder();
-
-                    String line = null;
-                    while ((line = reader.readLine()) != null)
-                    {
-                        sb.append(line + "\n");
-                    }
-                    result = sb.toString();
-                } catch (Exception e) {
-                    // Oops
-                }
-                finally {
-                    try{if(inputStream != null)inputStream.close();}catch(Exception squish){}
-                }
-                return result;
-            }
-
-            @Override
-            protected void onPostExecute(String result){
-                myJSON=result;
-                Toast.makeText(getApplicationContext(),"Json>>"+myJSON,Toast.LENGTH_LONG).show();
-            showList();
-            }
-        }
-        GetDataJSON g = new GetDataJSON();
-        g.execute();
-    }
-    //show
-
-    public void showList(){
-        Toast.makeText(getApplicationContext(),"showList",Toast.LENGTH_LONG).show();
         try {
-            if(myJSON!=null) {
-                JSONObject jsonObj = new JSONObject(myJSON);
-                store = jsonObj.getJSONArray(TAG_RESULTS);
 
-                for (int i = 0; i < store.length(); i++) {
-                    JSONObject c = store.getJSONObject(i);
-                    String id = c.getString(TAG_ID);
+            if ( jsonResult != null) {
+
+                JSONObject jsonObj = new JSONObject(jsonResult);
+                storesArray = jsonObj.getJSONArray(TAG_RESULTS);
+
+                for (int i = 0; i < storesArray.length(); i++) {
+
+                    JSONObject c = storesArray.getJSONObject(i);
+                    int id = Integer.parseInt( c.getString(TAG_ID) );
                     String name = c.getString(TAG_NAME);
-                    String address = c.getString(TAG_ADD);
+                    String logoUrl = c.getString(TAG_ADD);
 
-                    HashMap<String, String> persons = new HashMap<String, String>();
-
-                    persons.put(TAG_ID, id);
-                    persons.put(TAG_NAME, name);
-                    persons.put(TAG_ADD, address);
-
-                    storeList.add(persons);
-                    Toast.makeText(getApplicationContext(), id + name + address, Toast.LENGTH_LONG).show();
+                    Store store = new Store( id, name, logoUrl );
+                    storesList.add(store);
 
                 }
 
-                GetAllImage();
-            }
-            else {
+            } else {
                 Toast.makeText(getApplicationContext(), "لايوجد شيء بالقاعدة", Toast.LENGTH_LONG).show();
-
             }
-/*
-                ListAdapter adapter = new SimpleAdapter(
-                        MainActivity.this, personList, R.layout.list_item,
-                        new String[]{TAG_ID,TAG_NAME,TAG_ADD},
-                        new int[]{R.id.id, R.id.name, R.id.address}
-                );
 
-                list.setAdapter(adapter);
-*/
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
+
+
+        for( int i=0; i < storesList.size() ; i++ ) {
+
+            Store store = storesList.get(i);
+            getImage( store.getId() , store.getStoreName(), store.getLogoUrl() );
+
+
+        }
+
     }
 
-    //---------------------------------------------------------------------------image
-    private void getImage(final int id, final String stroename, String urlToImage){
-        class GetImage extends AsyncTask<String,Void,Bitmap>{
-            ProgressDialog loading;
+    private void getImage(final int id, final String storeName, String urlToImage){
+
+        class GetImage extends AsyncTask<String,Void,Bitmap> {
+
+
             @Override
             protected Bitmap doInBackground(String... params) {
-                URL url = null;
+
+                URL url;
                 Bitmap image = null;
 
                 String urlToImage = params[0];
+
                 try {
+
                     url = new URL(urlToImage);
 
                     HttpURLConnection con = (HttpURLConnection) url.openConnection();
                     int status = con.getResponseCode();
 
-                    if (status != HttpURLConnection.HTTP_OK)
-                        Log.i("getJSON", "doInBackground: " +status);
-                    else
-                        Log.i("getJSON", "doInBackground: " +status);
+                    Log.i("getJSON", "doInBackground: " +status);
 
                     image = BitmapFactory.decodeStream(con.getInputStream());
+
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                bitmapb=image;
-                return bitmapb;
+
+                return image;
             }
 
-//            @Override
-//            protected void onPreExecute() {
-//                super.onPreExecute();
-//                loading = ProgressDialog.show(MainActivity.this,"Downloading Image...","Please wait...",true,true);
-//
-//            }
 
             @Override
             protected void onPostExecute(Bitmap bitmap) {
+
                 super.onPostExecute(bitmap);
-               // loading.dismiss();
-                Store store=new Store(id,stroename,bitmap);
-                storeImageList.add(store);
+
+                // id-1 because of id starts from 1
+                Store store = storesList.get( id-1 );
+                store.setLogo(bitmap);
+
 
             }
         }
         GetImage gi = new GetImage();
         gi.execute(urlToImage);
     }
-    //---------------------------------Get all images
-    public void GetAllImage()
-    {
-        HashMap<String,String> store = new HashMap<String,String>();
-        for(int i=0;i<storeList.size();i++)
-        {
 
-            store=(HashMap<String, String>) storeList.get(i);
-
-            int id =Integer.parseInt(store.get(TAG_ID));
-            String name=store.get(TAG_NAME);
-           String address= store.get(TAG_ADD);
-            getImage(id,name,address);
-
-
-
-        }
-
-    }
 }
 
 
