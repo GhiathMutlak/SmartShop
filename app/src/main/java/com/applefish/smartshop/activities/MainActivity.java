@@ -1,7 +1,10 @@
 package com.applefish.smartshop.activities;
 
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -16,13 +19,19 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.applefish.smartshop.R;
@@ -40,7 +49,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
+import static com.applefish.smartshop.R.id.bottom;
 import static com.applefish.smartshop.R.id.container;
+import static com.applefish.smartshop.R.id.top;
 
 
 public class MainActivity extends AppCompatActivity
@@ -107,6 +118,8 @@ public class MainActivity extends AppCompatActivity
         storesList = new ArrayList<>();
 
         getJSON( STORES_URL );
+
+
 
     }
 
@@ -177,16 +190,124 @@ public class MainActivity extends AppCompatActivity
                                  Bundle savedInstanceState) {
 
             View rootView = inflater.inflate(R.layout.fragment_tabbed, container, false);
+            LinearLayout linearLayout= new LinearLayout(getContext());
 
-            LinearLayout layout = (LinearLayout) rootView.findViewById(R.id.layoutStore);
+            // creating LayoutParams
+           // LayoutParams linLayoutParam = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+            TableLayout mTlayout = (TableLayout)rootView.findViewById(R.id.tablestore);
+            TableRow tr = new TableRow(getContext());
+
 
                    if( getArguments().getInt(ARG_SECTION_NUMBER) == 3 ) {
 
-                       for ( int i=0; i < storesList.size(); i++ ){
-                           ImageView imageButton = new ImageButton(getContext());
-                           imageButton.setImageBitmap(storesList.get(i).getLogo());
+                       if(storesList.size()>0)
+                      rootView.findViewById(R.id.progressbarstore).setVisibility(View.GONE);
 
-                           layout.addView(imageButton);
+                       for ( int i=0; i < storesList.size(); i++ ){
+
+                           if (i % 2 == 0) {
+                               tr = new TableRow(getContext());
+
+                         //  tr.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT,1f));
+                             //  tr.setBackgroundColor(Color.GREEN);
+
+                             mTlayout.addView(tr);
+                           }
+                          //create component
+                           RelativeLayout linearLayout1 = new RelativeLayout(getContext());
+
+                           TextView textView = new TextView(getContext());
+                           textView.setText(storesList.get(i).getStoreName());
+
+                           ImageButton imageButton = new ImageButton(getContext());
+
+                           // TableRow  Params  apply on child (RelativeLayout)
+                           TableRow.LayoutParams rlp = new TableRow.LayoutParams( 225, 275,1f );
+                           rlp.topMargin=0;
+                           rlp.rightMargin=7;
+                           rlp.leftMargin=7;
+                           rlp.topMargin=7;
+                           rlp.bottomMargin=7;
+
+                           // RelativeLayout  Params  apply on child (imageButton )
+                           RelativeLayout.LayoutParams rlp2 = new RelativeLayout.LayoutParams( 52, 52 );
+                           rlp2.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                           rlp2.addRule(RelativeLayout.CENTER_VERTICAL);
+                           rlp2.rightMargin=10;
+                           rlp2.leftMargin=10;
+
+                           // RelativeLayout  Params  apply on child (textView )
+                           final RelativeLayout.LayoutParams rlp3 = new RelativeLayout.LayoutParams(
+                                   RelativeLayout.LayoutParams.WRAP_CONTENT,
+                                   RelativeLayout.LayoutParams.WRAP_CONTENT
+                           );
+                           rlp3.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                           rlp3.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                           //  textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+
+                           // RelativeLayout  Params  apply on child (imageButton ) when on click
+                           final RelativeLayout.LayoutParams rlp4 = new RelativeLayout.LayoutParams(
+                                   RelativeLayout.LayoutParams.WRAP_CONTENT,
+                                   RelativeLayout.LayoutParams.WRAP_CONTENT
+                           );
+                           rlp4.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                           rlp4.addRule(RelativeLayout.CENTER_VERTICAL);
+                           rlp4.rightMargin=20;
+                           rlp4.leftMargin=20;
+                           rlp4.bottomMargin=40;
+
+                           //set layout params
+                           linearLayout1.setLayoutParams(rlp);
+                           imageButton.setLayoutParams(rlp2);
+                           textView.setLayoutParams(rlp3);
+
+
+                           linearLayout1.setBackgroundResource(R.drawable.mybutton_background);
+                           linearLayout1.setAddStatesFromChildren(true);///<<<<<<<<<<<<<<<this line is the best in the world
+
+                           imageButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                          imageButton.setBackgroundResource(R.drawable.spin_animation);
+
+
+                           // Get the background, which has been compiled to an AnimationDrawable object.
+                           AnimationDrawable frameAnimation = (AnimationDrawable) imageButton.getBackground();
+                          // Start the animation (looped playback by default).
+                            frameAnimation.start();
+
+                           //add id for imageButton  &  linearLayout1
+                           imageButton.setId(1000+storesList.get(i).getId());
+                           linearLayout1.setId(2000+storesList.get(i).getId());
+
+                         //  imageButton.setDuplicateParentStateEnabled(true);
+                           //textView.setDuplicateParentStateEnabled(true);
+
+                           //add  View
+                           linearLayout1.addView(imageButton);
+                           linearLayout1.addView(textView);
+                           tr.addView(linearLayout1);
+
+                           imageButton.setOnClickListener(new View.OnClickListener() {
+                               @Override
+                               public void onClick(View v) {
+                                   // TODO Auto-generated method stub
+                                   int i=((ImageButton) v).getId()-1000;
+                                   ((ImageButton) v).setBackgroundResource(0);
+                                   ((ImageButton) v).setLayoutParams(rlp4);
+                                   RelativeLayout r = (RelativeLayout)  v.getParent();
+
+                                   ((ImageButton) v).setImageBitmap(storesList.get(i-1).getLogo());
+                                   Toast.makeText(getContext(),"id"+i, Toast.LENGTH_SHORT).show();
+                               }
+                           });
+
+                           linearLayout1.setOnClickListener(new View.OnClickListener() {
+                               @Override
+                               public void onClick(View v) {
+                                 //  ((RelativeLayout)v).setBackgroundResource(R.drawable.mybutton_background);
+                                   Toast.makeText(getContext(),"RelativeLayout", Toast.LENGTH_SHORT).show();
+                               }
+                           });
+
                        }
                    }
 
@@ -238,9 +359,14 @@ public class MainActivity extends AppCompatActivity
 
 
         class GetJSON extends AsyncTask<String, Void, String> {
-
-
-
+//            ProgressDialog loading;
+//
+//                      @Override
+//           protected void onPreExecute() {
+//               super.onPreExecute();
+//              loading = ProgressDialog.show(MainActivity.this,"Downloading Image...","Please wait...",true,true);
+//
+//          }
             @Override
             protected String doInBackground(String... params) {
 
@@ -275,6 +401,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             protected void onPostExecute(String result) {
                super.onPostExecute(result);
+//                loading.dismiss();
                 jsonResult = result;
                 getAllImages();
             }
