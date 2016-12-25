@@ -1,5 +1,7 @@
 package com.applefish.smartshop.classes;
 
+import android.graphics.Bitmap;
+
 import java.util.Date;
 
 /**
@@ -10,25 +12,29 @@ public class Offer {
 
     private int id;
     private String title;
-    private Date date;
+    private String date;
     private int numberOfViews;
     private String PDF_URL;
     private String coverURL;
     private int numberOfPages;
+    private String specification;
     private int storeID;
+    private Bitmap cover;
 
     public Offer() {
 
     }
 
-    public Offer(String title, int id, Date date, int numberOfViews, String PDF_URL, String coverURL, int numberOfPages, int storeID) {
-        this.title = title;
+    public Offer( int id,String title, String date, int numberOfViews, String PDF_URL, String coverURL, int numberOfPages,String specification, int storeID) {
+
         this.id = id;
+        this.title = title;
         this.date = date;
         this.numberOfViews = numberOfViews;
         this.PDF_URL = PDF_URL;
         this.coverURL = coverURL;
         this.numberOfPages = numberOfPages;
+        this.specification=specification;
         this.storeID = storeID;
     }
 
@@ -56,11 +62,11 @@ public class Offer {
         this.title = title;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
@@ -88,11 +94,27 @@ public class Offer {
         this.numberOfPages = numberOfPages;
     }
 
+    public String getSpecification() {
+        return specification;
+    }
+
+    public void setSpecification(String specification) {
+        this.specification = specification;
+    }
+
     public int getStoreID() {
         return storeID;
     }
 
     public void setStoreID(int storeID) {
         this.storeID = storeID;
+    }
+
+    public Bitmap getCover() {
+        return cover;
+    }
+
+    public void setCover(Bitmap cover) {
+        this.cover = cover;
     }
 }
