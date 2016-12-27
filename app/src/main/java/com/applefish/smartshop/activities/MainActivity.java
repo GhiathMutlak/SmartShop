@@ -448,6 +448,7 @@ public class MainActivity extends AppCompatActivity
             if ( jsonResult != null) {
 
                 JSONObject jsonObj = new JSONObject(jsonResult);
+                if(!jsonResult.toString().equals("{\"result\":\"NoStores\"}")) {
                 storesArray = jsonObj.getJSONArray(TAG_RESULTS);
 
                     for (int i = 0; i < storesArray.length(); i++) {
@@ -461,11 +462,13 @@ public class MainActivity extends AppCompatActivity
                         storesList.add(store);
 
                     }
-
+                }
+                else {
+                    Toast.makeText(getBaseContext(), "NO Stores", Toast.LENGTH_LONG).show();
+                }
             } else {
-                Toast.makeText(getApplicationContext(), "لايوجد شيء بالقاعدة", Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), "NO thing in DB", Toast.LENGTH_LONG).show();
             }
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
