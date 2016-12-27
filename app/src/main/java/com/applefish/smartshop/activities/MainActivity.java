@@ -1,10 +1,9 @@
 package com.applefish.smartshop.activities;
 
-import android.app.ProgressDialog;
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -20,15 +19,12 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -45,16 +41,12 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import static com.applefish.smartshop.R.id.bottom;
 import static com.applefish.smartshop.R.id.container;
-import static com.applefish.smartshop.R.id.textView;
-import static com.applefish.smartshop.R.id.top;
 
 
 public class MainActivity extends AppCompatActivity
@@ -78,7 +70,7 @@ public class MainActivity extends AppCompatActivity
 
     String jsonResult;
 
-    private static final String TAG_RESULTS="result";
+    private static final String TAG_RESULTS = "result";
     private static final String TAG_ID = "id";
     private static final String TAG_NAME = "storeName";
     private static final String TAG_ADD ="logoUrl";
@@ -375,6 +367,7 @@ public class MainActivity extends AppCompatActivity
 
                             offers.setClass( getContext(), OffersActivity.class );
                             bundle.putParcelable(TAG_NAME , storesList.get( storeLogo.getId()-1001 ));
+                            bundle.putString("ACTIVITY_NAME","MAIN");
                             offers.putExtras( bundle );
                             startActivity( offers );
 
@@ -448,6 +441,7 @@ public class MainActivity extends AppCompatActivity
             if ( jsonResult != null) {
 
                 JSONObject jsonObj = new JSONObject(jsonResult);
+                if(!jsonResult.toString().equals("{\"result\":\"NoStores\"}")) {
                 storesArray = jsonObj.getJSONArray(TAG_RESULTS);
 
                     for (int i = 0; i < storesArray.length(); i++) {
@@ -461,11 +455,13 @@ public class MainActivity extends AppCompatActivity
                         storesList.add(store);
 
                     }
-
+                }
+                else {
+                    Toast.makeText(getBaseContext(), "NO Stores", Toast.LENGTH_LONG).show();
+                }
             } else {
-                Toast.makeText(getApplicationContext(), "لايوجد شيء بالقاعدة", Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), "NO thing in DB", Toast.LENGTH_LONG).show();
             }
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
