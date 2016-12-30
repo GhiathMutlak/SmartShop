@@ -66,14 +66,14 @@ public class OffersActivity extends AppCompatActivity
     private static final String TAG_NUMOFPAGES ="numberOfPages";
     private static final String TAG_SPECIFICATION ="specification";
     private static final String TAG_STORE_IDSTORE="store_idstore";
-    private static final String OFFERS_URL = "http://192.168.1.2/smartshop/idid.php";
-
-    private static ArrayList<Offer> offersList;
+   //private static final String OFFERS_URL = "http://192.168.1.2/smartshop/idid.php";
+    private static final String OFFERS_URL ="http://gherasbirr.org/smartshop/idid.php";
+   private static ArrayList<Offer> offersList;
     private static ArrayList<ImageButton> offersCoversList;
     private static JSONArray offersArray = null;
 
     final static String Key = "com.applefish.smartshop.PdfViewer";
-
+    final static String Key2 = "com.applefish.smartshop.IDOffer";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -270,31 +270,35 @@ public class OffersActivity extends AppCompatActivity
                                 for ( int i=0; i < offersList.size(); i++ ){
 
 
-                                 TableLayout.LayoutParams params = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
-                                           TableLayout.LayoutParams.MATCH_PARENT );
-                                        params.rightMargin = 5;
-                                        params.leftMargin = 5;
-                                        params.topMargin = 5;
-                                        params.bottomMargin = 5;
-                                        tr[0] = new TableRow(getBaseContext());
-                                        tr[0].setLayoutParams(params);
-                                        tr[0].setBackgroundColor(Color.BLACK);
-                                         mTlayout.addView(tr[0]);
+                                    TableLayout.LayoutParams params = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
+                                            TableLayout.LayoutParams.MATCH_PARENT );
+                                    params.rightMargin = 5;
+                                    params.leftMargin = 5;
+                                    params.topMargin = 5;
+                                    params.bottomMargin = 5;
+                                    tr[0] = new TableRow(getBaseContext());
+                                    tr[0].setLayoutParams(params);
+                                    tr[0].setBackgroundColor(Color.BLACK);
+                                    mTlayout.addView(tr[0]);
 
-                                       //create component
+                                    //create component
                                     RelativeLayout relativeLayout = new RelativeLayout(getBaseContext());
                                     LinearLayout linearLayout = new LinearLayout(getBaseContext());
                                     linearLayout.setOrientation(LinearLayout.VERTICAL);
 
+//                                    relativeLayout.setBackgroundColor(Color.CYAN);
+//                                    linearLayout.setBackgroundColor(Color.GREEN);
+
+
                                     TextView title = new TextView(getBaseContext());
                                     title.setText( offersList.get(i).getTitle() );
-                                 //   title.setBackgroundResource(R.drawable.customborder3);
+                                    //   title.setBackgroundResource(R.drawable.customborder3);
                                     title.setTextSize(15);
                                     title.setTextColor(Color.GRAY);
 
                                     TextView date = new TextView(getBaseContext());
                                     date.setText( offersList.get(i).getDate() );
-                                //    date.setBackgroundResource(R.drawable.customborder3);
+                                    //    date.setBackgroundResource(R.drawable.customborder3);
                                     date.setTextSize(15);
                                     date.setTextColor(Color.GRAY);
                                     date.setTypeface(null, Typeface.BOLD);
@@ -306,40 +310,42 @@ public class OffersActivity extends AppCompatActivity
                                     numOfPages.setTextColor(Color.WHITE);
                                     numOfPages.setTypeface(null, Typeface.BOLD);
 
+
                                     final ImageButton offerCover = new ImageButton(getBaseContext());
 
                                     // TableRow  Params  apply on child (RelativeLayout)
                                     TableRow.LayoutParams rlp = new TableRow.LayoutParams(200,
-                                            300,1 );
+                                            260,40 );
 
-                                    TableRow.LayoutParams rlp2 = new TableRow.LayoutParams(450,
-                                            300 ,1);
+                                    TableRow.LayoutParams rlp2 = new TableRow.LayoutParams(400,
+                                            260 ,60);
                                     // LinearLayout  Params  apply on child (textView Number of pages)
                                     final LinearLayout.LayoutParams rlp3 = new LinearLayout.LayoutParams(
-                                            LinearLayout.LayoutParams.MATCH_PARENT,
+                                            LinearLayout.LayoutParams.WRAP_CONTENT,
                                             LinearLayout.LayoutParams.WRAP_CONTENT
                                     );
-                                    rlp3.weight=1;
-                                    rlp3.rightMargin=10;
-                                    rlp3.leftMargin=300;
-                                    rlp3.bottomMargin=27;
-                                    rlp3.topMargin=10;
-                                    // LinearLayout  Params  apply on child (textView Title)
+                                    //rlp3.weight=1;
+                                    // rlp3.rightMargin=10;
+                                    rlp3.leftMargin=100;
+                                    // rlp3.bottomMargin=27;
+                                    rlp3.topMargin=3;
+                                    // LinearLayout  Params  apply on child (textView Date)
                                     final LinearLayout.LayoutParams rlp4= new LinearLayout.LayoutParams(
                                             LinearLayout.LayoutParams.MATCH_PARENT,
                                             LinearLayout.LayoutParams.WRAP_CONTENT
                                     );
-                                    rlp4.weight=1;
-                                    rlp4.leftMargin=300;
-                                    rlp4.bottomMargin=20;
-                                    // LinearLayout  Params  apply on child (textView Date)
+                                    // rlp4.weight=1;
+                                    rlp4.leftMargin=30;
+                                    rlp4.topMargin=10;
+                                    // LinearLayout  Params  apply on child (textView Title)
                                     final LinearLayout.LayoutParams rlp5 = new LinearLayout.LayoutParams(
                                             LinearLayout.LayoutParams.MATCH_PARENT,
                                             LinearLayout.LayoutParams.WRAP_CONTENT
                                     );
-                                    rlp5.weight=1;
-                                    rlp5.leftMargin=25;
-                                    rlp5.bottomMargin=20;
+                                    //    rlp5.weight=1;
+                                    rlp5.leftMargin=20;
+                                    // rlp.gravity= Gravity.CENTER;
+                                    //  rlp5.bottomMargin=20;
 
                                     // RelativeLayout  Params  apply on child (imageButton )
                                     RelativeLayout.LayoutParams rlp6 = new RelativeLayout.LayoutParams( 52, 52);
@@ -347,6 +353,7 @@ public class OffersActivity extends AppCompatActivity
                                     rlp6.addRule(RelativeLayout.CENTER_VERTICAL);
                                     rlp6.leftMargin=10;
                                     rlp6.rightMargin=10;
+
 
                                     //set layout params
                                     relativeLayout.setLayoutParams(rlp);
@@ -357,8 +364,8 @@ public class OffersActivity extends AppCompatActivity
                                     date.setLayoutParams(rlp4);
                                     title.setLayoutParams(rlp5);
 
-                                   tr[0].setBackgroundResource(R.drawable.mybutton_background);
-                                   tr[0].setAddStatesFromChildren(true); // <<<<  this line is the best in the world
+                                    tr[0].setBackgroundResource(R.drawable.mybutton_background);
+                                    tr[0].setAddStatesFromChildren(true); // <<<<  this line is the best in the world
 
                                     offerCover.setScaleType(ImageView.ScaleType.FIT_CENTER);
                                     offerCover.setBackgroundResource(R.drawable.spin_animation);
@@ -370,13 +377,32 @@ public class OffersActivity extends AppCompatActivity
                                     // Start the animation (looped playback by default).
                                     frameAnimation.start();
 
-                               tr[0].setId( 1100+offersList.get(i).getId()) ;
 
+                                    tr[0].setId( 1100+offersList.get(i).getId()) ;
+
+                                    LinearLayout l1=new LinearLayout(getBaseContext());
+                                    l1.setOrientation(LinearLayout.HORIZONTAL);
+//l1.setBackgroundColor(Color.RED);
+                                    View v1=new View(getBaseContext());
+
+                                    l1.addView(numOfPages);
+                                    l1.addView(v1);
+
+                                    LinearLayout l2=new LinearLayout(getBaseContext());
+                                    l2.setOrientation(LinearLayout.HORIZONTAL);
+                                    l2.addView(title);
+//l2.setBackgroundColor(Color.GREEN);
+                                    LinearLayout l3=new LinearLayout(getBaseContext());
+                                    l3.setOrientation(LinearLayout.HORIZONTAL);
+                                    View v3=new View(getBaseContext());
+                                    l3.addView(date);
+                                    l3.addView(v3);
+//l3.setBackgroundColor(Color.YELLOW);
                                     //add  View
-                                  relativeLayout.addView(offerCover);
-                                    linearLayout.addView(numOfPages);
-                                    linearLayout.addView(title);
-                                    linearLayout.addView(date);
+                                    relativeLayout.addView(offerCover);
+                                    linearLayout.addView(l1,260,75);
+                                    linearLayout.addView(l2,  LinearLayout.LayoutParams.WRAP_CONTENT,  100);
+                                    linearLayout.addView(l3,230,75);
 
 
                                     tr[0].addView(relativeLayout);
@@ -388,18 +414,16 @@ public class OffersActivity extends AppCompatActivity
                                         @Override
                                         public void onClick(View v) {
 
-
-                                          Intent pdfViewer = new Intent( );
-                                          int tableRowId = v.getId();
-                                          String pdfUrl = offersList.get(tableRowId-1101).getPDF_URL();
-                                          Toast.makeText(getBaseContext(),pdfUrl,Toast.LENGTH_SHORT).show();
-                                          Log.i("getAllImages", "setOnClickListener: " +pdfUrl);
-                                          pdfViewer.putExtra(Key,pdfUrl);
-
-
-                                          pdfViewer.setClass( getBaseContext(), PdfViewerActivity.class );
-
-                                          startActivity( pdfViewer);
+                                            Intent pdfViewer = new Intent( );
+                                            int tableRowId = v.getId();
+                                            String pdfUrl = offersList.get(tableRowId-1101).getPDF_URL();
+                                            int idoffer=offersList.get(tableRowId-1101).getId();
+                                            Toast.makeText(getBaseContext(),pdfUrl,Toast.LENGTH_SHORT).show();
+                                            Log.i("getAllImages", "setOnClickListener: " +pdfUrl);
+                                            pdfViewer.putExtra(Key,pdfUrl);
+                                            pdfViewer.putExtra(Key2,idoffer);
+                                            pdfViewer.setClass( getBaseContext(), PdfViewerActivity.class );
+                                            startActivity( pdfViewer);
 
                                         }
                                     });
