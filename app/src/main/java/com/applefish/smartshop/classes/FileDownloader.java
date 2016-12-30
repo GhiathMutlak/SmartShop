@@ -4,13 +4,6 @@ package com.applefish.smartshop.classes;
  * Created by Amro on 24/12/2016.
  */
 
-import android.os.AsyncTask;
-import android.os.Environment;
-import android.view.View;
-import android.widget.ProgressBar;
-
-import com.applefish.smartshop.R;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -21,9 +14,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class FileDownloader {
+
     private static final int  MEGABYTE = 1024 * 1024;
 
     public static void downloadFile(String fileUrl, File directory){
+
         try {
 
             URL url = new URL(fileUrl);
@@ -34,14 +29,15 @@ public class FileDownloader {
 
             InputStream inputStream = urlConnection.getInputStream();
             FileOutputStream fileOutputStream = new FileOutputStream(directory);
-            int totalSize = urlConnection.getContentLength();
 
             byte[] buffer = new byte[MEGABYTE];
-            int bufferLength = 0;
+            int bufferLength;
+
             while((bufferLength = inputStream.read(buffer))>0 ){
                 fileOutputStream.write(buffer, 0, bufferLength);
 
             }
+
             fileOutputStream.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();

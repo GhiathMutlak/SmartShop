@@ -1,6 +1,8 @@
 package com.applefish.smartshop.activities;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -8,6 +10,8 @@ import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -46,6 +50,8 @@ public class OffersActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG_NAME = "storeName";
+    private static final int MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE = 0;
+    private static final int MY_PERMISSIONS_READ_PHONE_STATE = 0;
 
     private Store selectedStore;
 
@@ -54,7 +60,7 @@ public class OffersActivity extends AppCompatActivity
     private static final String TAG_ID = "id";
     private static final String TAG_TITLE = "title";
     private static final String TAG_DATE = "date";
-    private static final String TAG_NUMOFVIEWS = "numberOfViews";
+    private static final String TAG_NUM_OF_VIEWS = "numberOfViews";
     private static final String TAG_PDFURL = "PdfUrl";
     private static final String TAG_COVERURL= "coverUrl";
     private static final String TAG_NUMOFPAGES ="numberOfPages";
@@ -66,7 +72,7 @@ public class OffersActivity extends AppCompatActivity
     private static ArrayList<ImageButton> offersCoversList;
     private static JSONArray offersArray = null;
 
-    final  static  String Key="com.applefish.smartshop.PdfViewer";
+    final static String Key = "com.applefish.smartshop.PdfViewer";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,17 +93,44 @@ public class OffersActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         Bundle bundle = getIntent().getExtras();
-        selectedStore = (Store) bundle.get(TAG_NAME);
+        String activityName = bundle.getString("ACTIVITY_NAME");
+
+            if(activityName.equalsIgnoreCase("MAIN"))
+                selectedStore = (Store) bundle.get(TAG_NAME);
 //-----------------------------------------------------------
-        ImageView logo=(ImageView)findViewById(R.id.storelogo);
+        ImageView logo = (ImageView)findViewById(R.id.storelogo);
         logo.setImageBitmap(selectedStore.getLogo());
 
-        TextView storeName=(TextView)findViewById(R.id.storeName);
+        TextView storeName = (TextView)findViewById(R.id.storeName);
         storeName.setText(selectedStore.getStoreName());
 
         offersList = new ArrayList<>();
         offersCoversList = new ArrayList<>();
-        getJSON(OFFERS_URL);
+
+        Thread getData = new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                getJSON( OFFERS_URL );            }
+        };
+
+        getData.start();
+
+        int permissionCheckWriteExternalStorage = ContextCompat.checkSelfPermission(
+                OffersActivity.this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int permissionCheckReadPhoneState = ContextCompat.checkSelfPermission(OffersActivity.this,
+                Manifest.permission.READ_PHONE_STATE);
+
+        if ( permissionCheckWriteExternalStorage != PackageManager.PERMISSION_GRANTED ||
+                permissionCheckReadPhoneState != PackageManager.PERMISSION_GRANTED ) {
+
+            ActivityCompat.requestPermissions(OffersActivity.this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE},
+                    MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE);
+
+        }
+
     }
 
     @Override
@@ -138,7 +171,8 @@ public class OffersActivity extends AppCompatActivity
 
     private void getJSON(String url) {
 
-        int storeID=selectedStore.getId();
+        int storeID = selectedStore.getId();
+
         class GetJSON extends AsyncTask<String, Void, String> {
 
             @Override
@@ -153,18 +187,13 @@ public class OffersActivity extends AppCompatActivity
                     HttpURLConnection con = (HttpURLConnection) url.openConnection();
                     StringBuilder sb = new StringBuilder();
 
-                    int status = con.getResponseCode();
-
-
-                    Log.i("getJSON", "doInBackground: " +status);
-
                     bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
                     String json;
                     while((json = bufferedReader.readLine())!= null){
                         sb.append(json+"\n");
                     }
                     result=sb.toString().trim();
-                    Log.i("getJSON", "doInBackground: " +result);
+                    Log.i("getJSONOffers", "doInBackground: " +result);
                     return result;
 
                 }catch(Exception e){
@@ -177,7 +206,7 @@ public class OffersActivity extends AppCompatActivity
             protected void onPostExecute(String result) {
                 super.onPostExecute(result);
                 jsonResult = result;
-                getAllImages();
+                buidlOffersList();
 
             }
         }
@@ -187,14 +216,15 @@ public class OffersActivity extends AppCompatActivity
 
 
 
-    public void getAllImages() {
+    public void buidlOffersList() {
 
         try {
 
             if ( jsonResult != null) {
 
                 JSONObject jsonObj = new JSONObject(jsonResult);
-                if(!jsonResult.toString().equals("{\"result\":\"NoOffers\"}")) {
+
+                if( !jsonResult.toString().equals("{\"result\":\"NoOffers\"}")) {
                 offersArray = jsonObj.getJSONArray(TAG_RESULTS);
 
 
@@ -205,7 +235,7 @@ public class OffersActivity extends AppCompatActivity
                     int id = Integer.parseInt(c.getString(TAG_ID));
                     String title = c.getString(TAG_TITLE);
                     String date = c.getString(TAG_DATE);
-                    int numberOfViews = Integer.parseInt(c.getString(TAG_NUMOFVIEWS));
+                    int numberOfViews = Integer.parseInt(c.getString(TAG_NUM_OF_VIEWS));
                     String PdfUrl = c.getString(TAG_PDFURL);
                     String coverUrl = c.getString(TAG_COVERURL);
                     int numberOfPages = Integer.parseInt(c.getString(TAG_NUMOFPAGES));
@@ -218,29 +248,7 @@ public class OffersActivity extends AppCompatActivity
                 }
 
 
-                Thread retrieveCover;
-
-
-                retrieveCover = new Thread() {
-                    @Override
-                    public void run() {
-                        super.run();
-                        for (int i = 0; i < offersList.size(); i++) {
-                            final Offer offer = offersList.get(i);
-                            getImage(i, offer.getCoverURL());
-                        }
-                    }
-                };
-
-                try {
-                    retrieveCover.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                retrieveCover.start();
-
-//            while (retrieveCover.isAlive())
-//                continue;
+                    getAllImages();
 
                     {
 
@@ -277,16 +285,6 @@ public class OffersActivity extends AppCompatActivity
                                     RelativeLayout relativeLayout = new RelativeLayout(getBaseContext());
                                     LinearLayout linearLayout = new LinearLayout(getBaseContext());
                                     linearLayout.setOrientation(LinearLayout.VERTICAL);
-//                                    LinearLayout LayoutnumOfPages=new LinearLayout(getBaseContext());
-//                                    LayoutnumOfPages.setOrientation(LinearLayout.HORIZONTAL);
-//                                    LinearLayout Layouttitle=new LinearLayout(getBaseContext());
-//                                    Layouttitle.setOrientation(LinearLayout.HORIZONTAL);
-//                                    LinearLayout Layoutdate=new LinearLayout(getBaseContext());
-//                                    Layoutdate.setOrientation(LinearLayout.HORIZONTAL);
-
-//                                    relativeLayout.setBackgroundColor(Color.CYAN);
-//                                    linearLayout.setBackgroundColor(Color.GREEN);
-
 
                                     TextView title = new TextView(getBaseContext());
                                     title.setText( offersList.get(i).getTitle() );
@@ -307,10 +305,6 @@ public class OffersActivity extends AppCompatActivity
                                     numOfPages.setTextSize(14);
                                     numOfPages.setTextColor(Color.WHITE);
                                     numOfPages.setTypeface(null, Typeface.BOLD);
-
-//                                    LayoutnumOfPages.addView(numOfPages);
-//                                    Layouttitle.addView(title);
-//                                    Layoutdate.addView(date);
 
                                     final ImageButton offerCover = new ImageButton(getBaseContext());
 
@@ -354,8 +348,6 @@ public class OffersActivity extends AppCompatActivity
                                     rlp6.leftMargin=10;
                                     rlp6.rightMargin=10;
 
-                                    //set
-
                                     //set layout params
                                     relativeLayout.setLayoutParams(rlp);
                                     linearLayout.setLayoutParams(rlp2);
@@ -378,8 +370,6 @@ public class OffersActivity extends AppCompatActivity
                                     // Start the animation (looped playback by default).
                                     frameAnimation.start();
 
-                                    //add id for imageButton  &  linearLayout1
-                                 //   storeLogo.setId( 1000+storesList.get(i).getId() );
                                tr[0].setId( 1100+offersList.get(i).getId()) ;
 
                                     //add  View
@@ -398,17 +388,17 @@ public class OffersActivity extends AppCompatActivity
                                         @Override
                                         public void onClick(View v) {
 
+
                                           Intent pdfViewer = new Intent( );
-                                            int tableRowId=((TableRow)v).getId();
-                                            String pdfUrl=offersList.get(tableRowId-1101).getPDF_URL();
-                                            Toast.makeText(getBaseContext(),pdfUrl,Toast.LENGTH_SHORT).show();
-                                            Log.i("getAllImages", "setOnClickListener: " +pdfUrl);
-                                            pdfViewer.putExtra(Key,pdfUrl);
-//                                            Bundle bundle = new Bundle();
-//
-                                            pdfViewer.setClass( getBaseContext(), PdfViewerActivity.class );
-//                                            bundle.putParcelable(TAG_NAME , storesList.get( storeLogo.getId()-1001 ));
-//                                            offers.putExtras( bundle );
+                                          int tableRowId = v.getId();
+                                          String pdfUrl = offersList.get(tableRowId-1101).getPDF_URL();
+                                          Toast.makeText(getBaseContext(),pdfUrl,Toast.LENGTH_SHORT).show();
+                                          Log.i("getAllImages", "setOnClickListener: " +pdfUrl);
+                                          pdfViewer.putExtra(Key,pdfUrl);
+
+
+                                          pdfViewer.setClass( getBaseContext(), PdfViewerActivity.class );
+
                                           startActivity( pdfViewer);
 
                                         }
@@ -420,19 +410,18 @@ public class OffersActivity extends AppCompatActivity
                             }
                         };
 
-                        setupTab.start();
 
-                        while (setupTab.isAlive())
-                            continue;
+                        try {
+                            setupTab.start();
+                            setupTab.join();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
 
-
-
-
-
-                     OffersActivity.setImageBitmap();
+//                     OffersActivity.setImageBitmap();
 
                     }
-                Log.i(" Get all images", " THE END ");
+
             }
             else {
                 Toast.makeText(getBaseContext(), "NO offers", Toast.LENGTH_SHORT).show();
@@ -445,9 +434,35 @@ public class OffersActivity extends AppCompatActivity
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
     }
 
-    private synchronized void getImage(final int id, String urlToImage){
+    public static void getAllImages(){
+
+        Thread retrieveCover;
+
+
+        retrieveCover = new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                for (int i = 0; i < offersList.size(); i++) {
+                    final Offer offer = offersList.get(i);
+                    getImage(i, offer.getCoverURL());
+                }
+            }
+        };
+
+        try {
+            retrieveCover.start();
+            retrieveCover.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private static void getImage(final int id, String urlToImage){
 
         class GetImage extends AsyncTask<String,Void,Bitmap> {
 
@@ -489,15 +504,15 @@ public class OffersActivity extends AppCompatActivity
                 // id-1 because of id starts from 1
                 Offer offer = offersList.get( id );
                 offer.setCover(bitmap);
-                Log.i("post Execute", "Call # : "+id );
-
+                OffersActivity.setImageBitmap(id);
             }
         }
+
         GetImage gi = new GetImage();
         gi.execute(urlToImage);
     }
 
-    private static void setImageBitmap(){
+    private static void setImageBitmap( int index ){
 
         // RelativeLayout  Params  apply on child (imageButton ) when on click
         final RelativeLayout.LayoutParams rlp4 = new RelativeLayout.LayoutParams(
@@ -506,19 +521,14 @@ public class OffersActivity extends AppCompatActivity
         );
         rlp4.addRule(RelativeLayout.CENTER_HORIZONTAL);
         rlp4.addRule(RelativeLayout.CENTER_VERTICAL);
-//        rlp4.rightMargin=20;
-//        rlp4.leftMargin=20;
-//        rlp4.bottomMargin=40;
 
-        for( int i=0; i < offersList.size() ; i++ ) {
 
-            ImageButton offerCover = offersCoversList.get(i);
+            ImageButton offerCover = offersCoversList.get(index);
             offerCover.setBackgroundResource(0);
             offerCover.setLayoutParams(rlp4);
-            offerCover.setImageBitmap(offersList.get(i).getCover());
+            offerCover.setImageBitmap(offersList.get(index).getCover());
 
 
-        }
 
     }
 }

@@ -1,7 +1,6 @@
 package com.applefish.smartshop.activities;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -11,9 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.ProgressBar;
-
 
 import com.applefish.smartshop.R;
 import com.applefish.smartshop.classes.FileDownloader;
@@ -23,14 +20,13 @@ import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 public class PdfViewerActivity extends AppCompatActivity {
 
-    final  static  String Key="com.applefish.smartshop.PdfViewer";
-    private   String pdfurl;
-    private   String PDF_Name;
-    private   ProgressBar progressBar;
+    final static String Key="com.applefish.smartshop.PdfViewer";
+    private String pdfurl;
+    private String PDF_Name;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +35,8 @@ public class PdfViewerActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton share = (FloatingActionButton) findViewById(R.id.fab);
+        share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -49,8 +45,8 @@ public class PdfViewerActivity extends AppCompatActivity {
             }
         });
 
-        FloatingActionButton fab2 = (FloatingActionButton) findViewById(R.id.fab2);
-        fab2.setOnClickListener(new View.OnClickListener() {
+        final FloatingActionButton download = (FloatingActionButton) findViewById(R.id.fab2);
+        download.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action 2", Snackbar.LENGTH_LONG)
@@ -72,13 +68,21 @@ public class PdfViewerActivity extends AppCompatActivity {
         String [] PDF_URL=pdfurl.split("/");
         PDF_Name=PDF_URL[PDF_URL.length-1];
 
-//        WebView webView = (WebView) findViewById(R.id.webView1);
-//        webView.getSettings().setJavaScriptEnabled(true);
-//       // webView.loadUrl("http://drive.google.com/viewerng/viewer?embedded=true&url="+pdfurl);
-//        webView.loadUrl(pdfurl);
+        //-------------------1------------downlaod pdf file
+        Thread downloadFile = new Thread(){
+            @Override
+            public void run() {
+                download(download, pdfurl,PDF_Name);
+            }
+        };
 
-            //-------------------1------------downlaod pdf file
-        download(fab2, pdfurl,PDF_Name);
+        try {
+            downloadFile.start();
+            downloadFile.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
 
         //-------------------2------------ GONE progressBar
         progressBar.setVisibility(View.GONE);

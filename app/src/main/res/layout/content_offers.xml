@@ -5,8 +5,7 @@
     android:id="@+id/content_offers"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
-     app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.applefish.smartshop.activities.OffersActivity"
     tools:showIn="@layout/app_bar_offers"
     android:orientation="vertical">
@@ -33,26 +32,22 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-                <TableLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-         android:id="@+id/table1"
-        >
+             <TableLayout
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:id="@+id/table1"
+            >
 
-                  <TableRow
+            <TableRow
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-
-
-    >
+            android:layout_height="match_parent">
 
             <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="#179AE1"
-
-        >
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#179AE1"
+            >
 
           <TextView
             android:layout_width="wrap_content"
@@ -85,7 +80,7 @@
 
         </TableLayout>
 
-                <TableLayout
+            <TableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/table1"
