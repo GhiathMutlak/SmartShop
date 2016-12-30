@@ -18,15 +18,24 @@ import com.github.barteksc.pdfviewer.PDFView;
 import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener;
 import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class PdfViewerActivity extends AppCompatActivity {
 
     final static String Key="com.applefish.smartshop.PdfViewer";
+    final static String Key2 = "com.applefish.smartshop.IDOffer";
+
     private String pdfurl;
     private String PDF_Name;
+    private int IDOffer;
     private ProgressBar progressBar;
+    //private static final String AddView_URL = "http://192.168.1.2/smartshop/addview.php";
+    private static final String AddView_URL = "http://gherasbirr.org/smartshop/addview.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +73,7 @@ public class PdfViewerActivity extends AppCompatActivity {
 
         Intent i=getIntent();
         pdfurl=i.getStringExtra(Key);
-
+        IDOffer=i.getIntExtra(Key2,0);
         String [] PDF_URL=pdfurl.split("/");
         PDF_Name=PDF_URL[PDF_URL.length-1];
 
@@ -73,6 +82,7 @@ public class PdfViewerActivity extends AppCompatActivity {
             @Override
             public void run() {
                 download(download, pdfurl,PDF_Name);
+
             }
         };
 
@@ -86,7 +96,6 @@ public class PdfViewerActivity extends AppCompatActivity {
 
         //-------------------2------------ GONE progressBar
         progressBar.setVisibility(View.GONE);
-
         //-------------------3------------ view pdf
         PDFView pdfView=(PDFView)findViewById(R.id.pdfView);
         try{
@@ -115,6 +124,8 @@ public class PdfViewerActivity extends AppCompatActivity {
                     .password(null)
                     .load();
 
+            increaseNumOfView(AddView_URL+"/?idoffer="+IDOffer);
+            Log.i("PdfViewerActivity", "pdfView : " +IDOffer );
                }
 
         catch(Exception uriex){
@@ -155,5 +166,53 @@ public class PdfViewerActivity extends AppCompatActivity {
     {
         new DownloadFile().execute(pdfurl, PDF_Name);
     }
+
+    private void increaseNumOfView(String url) {
+
+
+        class IncreaseNumOfView extends AsyncTask<String, Void, String> {
+
+            @Override
+            protected String doInBackground(String... params) {
+
+                String uri = params[0];
+                String result ="";
+                BufferedReader bufferedReader = null;
+                try {
+
+                    URL url = new URL(uri);
+                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                    StringBuilder sb = new StringBuilder();
+
+                    int status = con.getResponseCode();
+
+
+                    Log.i("increaseNumOfView", "doInBackground: " +status);
+
+                    bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                    String json;
+                    while((json = bufferedReader.readLine())!= null){
+                        sb.append(json+"\n");
+                    }
+                    result=sb.toString().trim();
+                    return result;
+
+                }catch(Exception e){
+                    return null;
+                }
+
+            }
+            @Override
+            protected void onPostExecute(String result) {
+                super.onPostExecute(result);
+
+            }
+        }
+
+        IncreaseNumOfView gj = new IncreaseNumOfView();
+        gj.execute(url);
+
+    }
+
 
 }

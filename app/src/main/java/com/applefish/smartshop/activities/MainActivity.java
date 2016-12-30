@@ -74,7 +74,8 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG_ID = "id";
     private static final String TAG_NAME = "storeName";
     private static final String TAG_ADD ="logoUrl";
-    private static final String STORES_URL = "http://192.168.1.2/smartshop/retrivelogo.php";
+  // private static final String STORES_URL = "http://192.168.1.2/smartshop/retrivelogo.php";
+    private static final String STORES_URL = "http://gherasbirr.org/smartshop/retrivelogo.php";
 
     private static ArrayList<Store> storesList;
     private static ArrayList<ImageButton> storesLogosList;
@@ -307,7 +308,7 @@ public class MainActivity extends AppCompatActivity
                     final ImageButton storeLogo = new ImageButton(getContext());
 
                     // TableRow  Params  apply on child (RelativeLayout)
-                    TableRow.LayoutParams rlp = new TableRow.LayoutParams( 225, 275,1f );
+                    TableRow.LayoutParams rlp = new TableRow.LayoutParams( 250, 250,1f );
                     rlp.rightMargin=7;
                     rlp.leftMargin=7;
                     rlp.topMargin=7;
