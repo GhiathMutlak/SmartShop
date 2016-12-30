@@ -94,12 +94,10 @@ public class PdfViewerActivity extends AppCompatActivity {
         }
 
 
-        //-------------------2------------ GONE progressBar
-        progressBar.setVisibility(View.GONE);
-        //-------------------3------------ view pdf
         PDFView pdfView=(PDFView)findViewById(R.id.pdfView);
         try{
 
+            Thread.sleep(2000);
            // Uri uri=Uri.fromFile(new File(pdfurl)) ;
             File file1 = new File(Environment.getExternalStorageDirectory()+"/SmartShopOffers/"+PDF_Name);
           //  pdfView.fromUri(uri).load();
@@ -124,6 +122,7 @@ public class PdfViewerActivity extends AppCompatActivity {
                     .password(null)
                     .load();
 
+            progressBar.setVisibility(View.GONE);
             increaseNumOfView(AddView_URL+"/?idoffer="+IDOffer);
             Log.i("PdfViewerActivity", "pdfView : " +IDOffer );
                }
@@ -176,8 +175,8 @@ public class PdfViewerActivity extends AppCompatActivity {
             protected String doInBackground(String... params) {
 
                 String uri = params[0];
-                String result ="";
-                BufferedReader bufferedReader = null;
+                String result;
+                BufferedReader bufferedReader ;
                 try {
 
                     URL url = new URL(uri);
