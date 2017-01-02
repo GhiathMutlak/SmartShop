@@ -10,20 +10,28 @@
     tools:context="com.applefish.smartshop.activities.PdfViewerActivity"
     tools:showIn="@layout/activity_pdf_viewer">
 
-
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/rel1">
     <ProgressBar
         android:theme="@style/CircularProgress"
         style="@style/Widget.AppCompat.ProgressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/progressbarPdf"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:id="@+id/progressbarPdf"
-
         />
+</RelativeLayout>
     <com.github.barteksc.pdfviewer.PDFView
         android:id="@+id/pdfView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:visibility="invisible"
+        android:layout_below="@+id/rel1"
+     />
+
+
 
 </RelativeLayout>
