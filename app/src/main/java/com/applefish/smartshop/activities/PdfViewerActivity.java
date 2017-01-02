@@ -1,11 +1,16 @@
 package com.applefish.smartshop.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -34,9 +39,10 @@ public class PdfViewerActivity extends AppCompatActivity {
     private String PDF_Name;
     private int IDOffer;
     private ProgressBar progressBar;
+    PDFView pdfView;
     //private static final String AddView_URL = "http://192.168.1.2/smartshop/addview.php";
     private static final String AddView_URL = "http://gherasbirr.org/smartshop/addview.php";
-
+    private  int pdfsize=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +76,7 @@ public class PdfViewerActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         progressBar=(ProgressBar)findViewById(R.id.progressbarPdf);
+        pdfView=(PDFView)findViewById(R.id.pdfView);
 
         Intent i=getIntent();
         pdfurl=i.getStringExtra(Key);
@@ -78,66 +85,131 @@ public class PdfViewerActivity extends AppCompatActivity {
         PDF_Name=PDF_URL[PDF_URL.length-1];
 
         //-------------------1------------downlaod pdf file
-        Thread downloadFile = new Thread(){
+        Thread getPdfsize = new Thread(){
             @Override
             public void run() {
-                download(download, pdfurl,PDF_Name);
+                getPdfsize(pdfurl);
 
             }
         };
 
         try {
-            downloadFile.start();
-            downloadFile.join();
+            getPdfsize.start();
+            getPdfsize.join();
+
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
 
-        PDFView pdfView=(PDFView)findViewById(R.id.pdfView);
-        try{
+    }
 
-            Thread.sleep(2000);
-           // Uri uri=Uri.fromFile(new File(pdfurl)) ;
-            File file1 = new File(Environment.getExternalStorageDirectory()+"/SmartShopOffers/"+PDF_Name);
-          //  pdfView.fromUri(uri).load();
-            pdfView.fromFile(file1)
-                    .enableSwipe(true)
-                    .enableDoubletap(true)
-                    .swipeHorizontal(true)
-                    .defaultPage(0)
-                    .onLoad(new OnLoadCompleteListener() {
-                        @Override
-                        public void loadComplete(int nbPages) {
+    public  void displayViewPDF()
+    {
+
+
+        // Uri uri=Uri.fromFile(new File(pdfurl)) ;
+
+
+            final Handler handler = new Handler(Looper.getMainLooper());
+            handler.postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    File file1 = new File(Environment.getExternalStorageDirectory() + "/SmartShopOffers/" + PDF_Name);
+                    Log.i("displayViewPDF", "file1 size " + file1.length());
+
+
+//                    while(pdfSize==0 && pdfSize!=file1.length())
+//                    {
+//
+//                        file1 = new File(Environment.getExternalStorageDirectory() + "/SmartShopOffers/" + PDF_Name);
+//                        pdfSize=file1.length();
+//                    }
+
+                        if(file1.length()>=pdfsize){
+
+                            try {
+                            pdfView.fromFile(file1)
+                                    .enableSwipe(true)
+                                    .enableDoubletap(true)
+                                    .swipeHorizontal(true)
+                                    .defaultPage(0)
+                                    .onLoad(new OnLoadCompleteListener() {
+                                        @Override
+                                        public void loadComplete(int nbPages) {
+
+                                        }
+                                    })
+                                    .onPageChange(new OnPageChangeListener() {
+                                        @Override
+                                        public void onPageChanged(int page, int pageCount) {
+
+                                        }
+                                    })
+                                    .enableAnnotationRendering(false)
+                                    .password(null)
+                                    .load();
+
+                        } catch (Exception uriex) {
+                            Log.i("catch PdfViewerActivity", "displayViewPDF,   " + uriex);
+
+                        } finally {
+
+                            progressBar.setVisibility(View.GONE);
+                            pdfView.setVisibility(View.VISIBLE);
+                            pdfView = (PDFView) findViewById(R.id.pdfView);
+                            increaseNumOfView(AddView_URL + "/?idoffer=" + IDOffer);
+                            Log.i("displayViewPDF", "displayViewPDF IDOffer= " + IDOffer);
 
                         }
-                    })
-                    .onPageChange(new OnPageChangeListener() {
-                        @Override
-                        public void onPageChanged(int page, int pageCount) {
 
                         }
-                    })
-                    .enableAnnotationRendering(false)
-                    .password(null)
-                    .load();
+                    else
+                        {
+                            if(file1.exists())
+                            displayViewPDF();
+                        }
 
-            progressBar.setVisibility(View.GONE);
-            increaseNumOfView(AddView_URL+"/?idoffer="+IDOffer);
-            Log.i("PdfViewerActivity", "pdfView : " +IDOffer );
-               }
+                }
+            }, 2000);
 
-        catch(Exception uriex){
-            Log.i("PdfViewerActivity", "pdfView : " + uriex);
+
+
+
 
         }
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        getDelegate().onPostCreate(savedInstanceState);
+
 
 
 
     }
 
-
     private class DownloadFile extends AsyncTask<String, Void, Void> {
+//        ProgressDialog loading;
+//        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+       //     loading = ProgressDialog.show(getBaseContext(), "Fetching Data","Please Wait...",true,true);
+
+            final Handler handler = new Handler(Looper.getMainLooper());
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    displayViewPDF();
+                }
+            }, 3000);
+
+
+        }
+
 
         @Override
         protected Void doInBackground(String... strings) {
@@ -148,16 +220,31 @@ public class PdfViewerActivity extends AppCompatActivity {
             folder.mkdir();
 
             File pdfFile = new File(folder, fileName);
+            long pdfFileLenght=pdfFile.length();
+           if( pdfFile.exists() && pdfFileLenght== pdfsize)
+           {
+               Log.i("DownloadFile1", "exist pdf ");
+           }
+            else
+           {
+               try{
+                   pdfFile.createNewFile();
+                   Log.i("DownloadFile1", "NOT exist pdf ");
+               }catch (IOException e){
 
-            try{
-                pdfFile.createNewFile();
-            }catch (IOException e){
-                e.printStackTrace();
-            }
-            Log.i("DownloadFile", "doInBackground: " +pdfFile+"---"+fileName);
-            FileDownloader.downloadFile(fileUrl, pdfFile);
+                   Log.i("DownloadFile2", "doInBackground: " +e);
+                   e.printStackTrace();
+               }
+               Log.i("DownloadFile3", "doInBackground: " +pdfFile+"--->"+fileName);
+               FileDownloader.downloadFile(fileUrl, pdfFile);
+           }
+
             return null;
         }
+
+//@Override
+//protected void onCancelled() {   super.onCancelled();
+//    loading.dismiss();}
 
     }
 
@@ -209,6 +296,47 @@ public class PdfViewerActivity extends AppCompatActivity {
         }
 
         IncreaseNumOfView gj = new IncreaseNumOfView();
+        gj.execute(url);
+
+    }
+    private void getPdfsize(String url) {
+
+
+        class GetPdfSize extends AsyncTask<String, Void, String> {
+
+            @Override
+            protected String doInBackground(String... params) {
+
+                String uri = params[0];
+                int result;
+                BufferedReader bufferedReader ;
+                try {
+
+                    URL url = new URL(uri);
+                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                    StringBuilder sb = new StringBuilder();
+
+                    int status = con.getResponseCode();
+
+                    Log.i("GetPdfsize", "doInBackground: status" +status);
+
+                    pdfsize=con.getContentLength();
+                    Log.i("GetPdfsize", "doInBackground:pdfsize= " +pdfsize);
+                    return null;
+
+                }catch(Exception e){
+                    return null;
+                }
+
+            }
+            @Override
+            protected void onPostExecute(String result) {
+                super.onPostExecute(result);
+                download(pdfView, pdfurl,PDF_Name);
+            }
+        }
+
+        GetPdfSize gj = new GetPdfSize();
         gj.execute(url);
 
     }

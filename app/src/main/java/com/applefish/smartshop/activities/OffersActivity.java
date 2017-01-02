@@ -378,7 +378,7 @@ public class OffersActivity extends AppCompatActivity
                                     frameAnimation.start();
 
 
-                                    tr[0].setId( 1100+offersList.get(i).getId()) ;
+                                    tr[0].setId( 1100+i) ;
 
                                     LinearLayout l1=new LinearLayout(getBaseContext());
                                     l1.setOrientation(LinearLayout.HORIZONTAL);
@@ -400,7 +400,7 @@ public class OffersActivity extends AppCompatActivity
 //l3.setBackgroundColor(Color.YELLOW);
                                     //add  View
                                     relativeLayout.addView(offerCover);
-                                    linearLayout.addView(l1,260,75);
+                                    linearLayout.addView(l1,270,75);
                                     linearLayout.addView(l2,  LinearLayout.LayoutParams.WRAP_CONTENT,  100);
                                     linearLayout.addView(l3,230,75);
 
@@ -415,9 +415,9 @@ public class OffersActivity extends AppCompatActivity
                                         public void onClick(View v) {
 
                                             Intent pdfViewer = new Intent( );
-                                            int tableRowId = v.getId();
-                                            String pdfUrl = offersList.get(tableRowId-1101).getPDF_URL();
-                                            int idoffer=offersList.get(tableRowId-1101).getId();
+                                            int tableRowId = ((TableRow)v).getId();
+                                            String pdfUrl = offersList.get(tableRowId-1100).getPDF_URL();
+                                            int idoffer=offersList.get(tableRowId-1100).getId();
                                             Toast.makeText(getBaseContext(),pdfUrl,Toast.LENGTH_SHORT).show();
                                             Log.i("getAllImages", "setOnClickListener: " +pdfUrl);
                                             pdfViewer.putExtra(Key,pdfUrl);

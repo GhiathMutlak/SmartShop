@@ -300,7 +300,7 @@ public class MainActivity extends AppCompatActivity
                     }
 
                     //create component
-                    RelativeLayout linearLayout1 = new RelativeLayout(getContext());
+                    final RelativeLayout linearLayout1 = new RelativeLayout(getContext());
 
                     TextView storeName = new TextView(getContext());
                     storeName.setText( storesList.get(i).getStoreName() );
@@ -349,8 +349,8 @@ public class MainActivity extends AppCompatActivity
                     frameAnimation.start();
 
                     //add id for imageButton  &  linearLayout1
-                    storeLogo.setId( 1000+storesList.get(i).getId() );
-                    linearLayout1.setId( 2000+storesList.get(i).getId()) ;
+                    storeLogo.setId( 1000+i);
+                    linearLayout1.setId( 2000+i) ;
 
                     //add  View
                     linearLayout1.addView(storeLogo);
@@ -367,13 +367,30 @@ public class MainActivity extends AppCompatActivity
                             Bundle bundle = new Bundle();
 
                             offers.setClass( getContext(), OffersActivity.class );
-                            bundle.putParcelable(TAG_NAME , storesList.get( storeLogo.getId()-1001 ));
+                            bundle.putParcelable(TAG_NAME , storesList.get( storeLogo.getId()-1000 ));
                             bundle.putString("ACTIVITY_NAME","MAIN");
                             offers.putExtras( bundle );
                             startActivity( offers );
 
                         }
                     });
+                    linearLayout1.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                            Intent offers = new Intent( );
+                            Bundle bundle = new Bundle();
+
+                            offers.setClass( getContext(), OffersActivity.class );
+                            bundle.putParcelable(TAG_NAME , storesList.get( linearLayout1.getId()-2000 ));
+                            bundle.putString("ACTIVITY_NAME","MAIN");
+                            offers.putExtras( bundle );
+                            startActivity( offers );
+
+                        }
+                    });
+
+
 
 
                 }
@@ -547,14 +564,14 @@ public class MainActivity extends AppCompatActivity
 
         // RelativeLayout  Params  apply on child (imageButton ) when on click
         final RelativeLayout.LayoutParams rlp4 = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.WRAP_CONTENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT
+                200,
+                200
         );
         rlp4.addRule(RelativeLayout.CENTER_HORIZONTAL);
         rlp4.addRule(RelativeLayout.CENTER_VERTICAL);
-        rlp4.rightMargin=20;
-        rlp4.leftMargin=20;
-        rlp4.bottomMargin=40;
+//        rlp4.rightMargin=20;
+//        rlp4.leftMargin=20;
+//        rlp4.bottomMargin=40;
 
 
         ImageButton storeLogo = storesLogosList.get(index);
