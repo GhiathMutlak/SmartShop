@@ -1,6 +1,5 @@
 package com.applefish.smartshop.activities;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,18 +9,17 @@ import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import com.applefish.smartshop.R;
 import com.applefish.smartshop.classes.FileDownloader;
 import com.github.barteksc.pdfviewer.PDFView;
 import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener;
 import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
+import com.applefish.smartshop.R;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -40,9 +38,9 @@ public class PdfViewerActivity extends AppCompatActivity {
     private int IDOffer;
     private ProgressBar progressBar;
     PDFView pdfView;
-    //private static final String AddView_URL = "http://192.168.1.2/smartshop/addview.php";
+//    private static final String AddView_URL = "http://192.168.1.2/smartshop/addview.php";
     private static final String AddView_URL = "http://gherasbirr.org/smartshop/addview.php";
-    private  int pdfsize=0;
+    private  int pdfsize = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
