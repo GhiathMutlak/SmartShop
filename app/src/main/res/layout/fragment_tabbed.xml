@@ -20,8 +20,8 @@
         android:layout_centerVertical="true"
         android:id="@+id/progressbarstore"
         />
-    <ScrollView
 
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/Scrollstore"
@@ -37,14 +37,47 @@
             android:id="@+id/tablestore"
             >
 
+        </TableLayout>
+
+    </ScrollView>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/latest_scroll"
+
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
 
-
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/latest_table"
+            >
 
         </TableLayout>
 
+    </ScrollView>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/most_viewed_scroll"
+
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
 
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/most_viewed_table"
+            >
+
+        </TableLayout>
 
     </ScrollView>
 

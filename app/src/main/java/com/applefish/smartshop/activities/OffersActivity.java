@@ -58,22 +58,23 @@ public class OffersActivity extends AppCompatActivity
     private String jsonResult;
     private static final String TAG_RESULTS="result";
     private static final String TAG_ID = "id";
-    private static final String TAG_TITLE = "title";
-    private static final String TAG_DATE = "date";
-    private static final String TAG_NUM_OF_VIEWS = "numberOfViews";
-    private static final String TAG_PDFURL = "PdfUrl";
-    private static final String TAG_COVERURL= "coverUrl";
-    private static final String TAG_NUMOFPAGES ="numberOfPages";
-    private static final String TAG_SPECIFICATION ="specification";
-    private static final String TAG_STORE_IDSTORE="store_idstore";
-   //private static final String OFFERS_URL = "http://192.168.1.2/smartshop/idid.php";
+    public static final String TAG_TITLE = "title";
+    public static final String TAG_DATE = "date";
+    public static final String TAG_NUM_OF_VIEWS = "numberOfViews";
+    public static final String TAG_PDFURL = "PdfUrl";
+    public static final String TAG_COVERURL= "coverUrl";
+    public static final String TAG_NUMOFPAGES ="numberOfPages";
+    public static final String TAG_SPECIFICATION ="specification";
+    public static final String TAG_STORE_IDSTORE="store_idstore";
+//    private static final String OFFERS_URL = "http://192.168.1.2/smartshop/idid.php";
     private static final String OFFERS_URL ="http://gherasbirr.org/smartshop/idid.php";
-   private static ArrayList<Offer> offersList;
+    private static ArrayList<Offer> offersList;
     private static ArrayList<ImageButton> offersCoversList;
     private static JSONArray offersArray = null;
 
     final static String Key = "com.applefish.smartshop.PdfViewer";
     final static String Key2 = "com.applefish.smartshop.IDOffer";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -206,7 +207,7 @@ public class OffersActivity extends AppCompatActivity
             protected void onPostExecute(String result) {
                 super.onPostExecute(result);
                 jsonResult = result;
-                buidlOffersList();
+                buildOffersList();
 
             }
         }
@@ -216,7 +217,7 @@ public class OffersActivity extends AppCompatActivity
 
 
 
-    public void buidlOffersList() {
+    public void buildOffersList() {
 
         try {
 
@@ -415,7 +416,7 @@ public class OffersActivity extends AppCompatActivity
                                         public void onClick(View v) {
 
                                             Intent pdfViewer = new Intent( );
-                                            int tableRowId = ((TableRow)v).getId();
+                                            int tableRowId = v.getId();
                                             String pdfUrl = offersList.get(tableRowId-1100).getPDF_URL();
                                             int idoffer=offersList.get(tableRowId-1100).getId();
                                             Toast.makeText(getBaseContext(),pdfUrl,Toast.LENGTH_SHORT).show();
