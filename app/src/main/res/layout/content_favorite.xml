@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_favorite"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.applefish.smartshop.activities.FavoriteActivity"
+    tools:showIn="@layout/activity_favorite">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/Scroll_fav_offer"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="#F4F4F4"
+        >
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="1000dp"
+                android:id="@+id/table_fav_offer"
+                android:layout_marginBottom="15dp"
+                >
+            </TableLayout>
+
+
+    </ScrollView>
+</RelativeLayout>

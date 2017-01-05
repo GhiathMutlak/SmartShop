@@ -1,6 +1,8 @@
 package com.applefish.smartshop.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -9,17 +11,21 @@ import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
+import com.applefish.smartshop.R;
 import com.applefish.smartshop.classes.FileDownloader;
 import com.github.barteksc.pdfviewer.PDFView;
 import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener;
 import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
-import com.applefish.smartshop.R;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -38,9 +44,10 @@ public class PdfViewerActivity extends AppCompatActivity {
     private int IDOffer;
     private ProgressBar progressBar;
     PDFView pdfView;
-//    private static final String AddView_URL = "http://192.168.1.2/smartshop/addview.php";
+    //private static final String AddView_URL = "http://192.168.1.2/smartshop/addview.php";
     private static final String AddView_URL = "http://gherasbirr.org/smartshop/addview.php";
-    private  int pdfsize = 0;
+    private  int pdfsize=0;
+    private CheckBox starBTN;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +59,7 @@ public class PdfViewerActivity extends AppCompatActivity {
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Share Offer", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
 
             }
@@ -62,10 +69,7 @@ public class PdfViewerActivity extends AppCompatActivity {
         download.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action 2", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-
-                download(view, pdfurl,PDF_Name);
+                   download(view, pdfurl,PDF_Name);
 
                 Snackbar.make(view, "DownLoad File Success", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
@@ -73,14 +77,95 @@ public class PdfViewerActivity extends AppCompatActivity {
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        progressBar=(ProgressBar)findViewById(R.id.progressbarPdf);
-        pdfView=(PDFView)findViewById(R.id.pdfView);
-
-        Intent i=getIntent();
-        pdfurl=i.getStringExtra(Key);
-        IDOffer=i.getIntExtra(Key2,0);
+        Intent intent=getIntent();
+        pdfurl=intent.getStringExtra(Key);
+        IDOffer=intent.getIntExtra(Key2,0);
         String [] PDF_URL=pdfurl.split("/");
         PDF_Name=PDF_URL[PDF_URL.length-1];
+
+        progressBar=(ProgressBar)findViewById(R.id.progressbarPdf);
+        pdfView=(PDFView)findViewById(R.id.pdfView);
+        starBTN=(CheckBox)findViewById(R.id.btn_star);
+        starBTN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String favoriteOffer=readSharedPreference();
+                String [] offersId=favoriteOffer.split(",");
+                String newFavoritoffers="";
+                if(starBTN.isChecked())
+                {
+                    if(offersId.length==1 && offersId[0].equals(""))
+                    {
+                        newFavoritoffers=""+IDOffer;
+                    }
+                     else if(offersId.length>=1 &&  !offersId[0].equals(""))
+                    {
+                        newFavoritoffers=favoriteOffer+","+IDOffer;
+                    }
+                    writeSharedPreference(newFavoritoffers);
+                    Toast.makeText(getBaseContext(), "Add To Favorite", Toast.LENGTH_LONG).show();
+                }
+                else
+                {
+                    //
+                    if(offersId.length==1 && !offersId[0].equals(""))
+                    {
+                        newFavoritoffers="";
+                    }
+                    else if(offersId.length>=1 && !offersId[0].equals(""))
+                    {
+                        for (int i=0;i<offersId.length;i++)
+                        {
+                            if(!offersId[i].equals(IDOffer+""))
+                            {
+                                if(i==(offersId.length-1))
+                                {
+                                    newFavoritoffers=newFavoritoffers+offersId[i];
+                                }
+                                else
+                                {
+                                    newFavoritoffers=newFavoritoffers+offersId[i]+",";
+                                }
+                            }
+                        }
+                    }
+                    writeSharedPreference(newFavoritoffers);
+                    Toast.makeText(getBaseContext(), "Delete From Favorite", Toast.LENGTH_LONG).show();
+                    //
+
+
+                }
+
+
+            }
+
+
+        });
+        String favoriteOffer=readSharedPreference();
+        String [] offersId=favoriteOffer.split(",");
+        Boolean find=false;
+        if(offersId.length==1 && offersId[0].equals(""))
+        {
+
+            starBTN.setChecked(false);
+        }
+        else if(offersId.length>=1 && !offersId[0].equals(""))
+        {
+            for (int i=0;i<offersId.length;i++)
+            {
+
+                if(offersId[i].equals((IDOffer+"")))
+                {
+                    starBTN.setChecked(true);
+                    find=true;
+                    break;
+                }
+            }
+            if(!find)
+                starBTN.setChecked(false);
+        }
+
+
 
         //-------------------1------------downlaod pdf file
         Thread getPdfsize = new Thread(){
@@ -339,5 +424,20 @@ public class PdfViewerActivity extends AppCompatActivity {
 
     }
 
+    public String readSharedPreference()
+    {
+        SharedPreferences sharedPref =getBaseContext().getSharedPreferences("com.applefish.smartshop.FAVORITE_KEY",MODE_PRIVATE);
+        //0 is default_value if no vaule
+        String savedFavoriteOffer = sharedPref .getString(getString(R.string.saved_favorite), "");
+
+        return savedFavoriteOffer;
+    }
+    public  void  writeSharedPreference(String savedFavoriteOffer)
+    {
+        SharedPreferences sharedPref =getBaseContext().getSharedPreferences("com.applefish.smartshop.FAVORITE_KEY",MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(getString(R.string.saved_favorite), savedFavoriteOffer);
+        editor.commit();
+    }
 
 }
