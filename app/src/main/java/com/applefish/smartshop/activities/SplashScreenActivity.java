@@ -1,0 +1,175 @@
+package com.applefish.smartshop.activities;
+
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Handler;
+import android.os.Looper;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.TextView;
+
+import com.applefish.smartshop.R;
+
+import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class SplashScreenActivity extends AppCompatActivity {
+
+    private int count = 0;
+    private TextView connectState;
+    Thread connectThread;
+
+    private Handler handler=new Handler(Looper.getMainLooper());
+    private Timer splashTimer=new Timer();
+    private TimerTask splashTimerTask;
+    private int timerCount=0;
+    boolean coonectCheck=false;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+//        //no title bar FEATURE_NO_TITLE
+//        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//
+//        //full screen
+//        getWindow().setFlags( WindowManager.LayoutParams.FLAG_FULLSCREEN, 0 );
+
+        setContentView(R.layout.activity_splash_screen);
+
+        connectState=(TextView)findViewById(R.id.connectState);
+        connectThread = new Thread() {
+
+            @Override
+            public void run() {
+                try {
+                    while (!isInterrupted()) {
+                        Thread.sleep(500);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                if(count == 0)
+                                {connectState.setText("Connect .");}
+                                else if(count == 1)
+                                {connectState.setText("Connect ..");}
+                                else if(count == 2)
+                                {connectState.setText("Connect ...");}
+                                else if(count == 3)
+                                {connectState.setText("Connect ....");}
+                                else if(count == 4)
+                                {connectState.setText("Connect .....");}
+                                else if(count == 5)
+                                    count=-1;
+                                count++;
+
+                            }
+                        });
+                    }
+                } catch (InterruptedException e) {
+                    Log.d("yes","connectThread noooooooooooooooooo" +e);
+                }
+            }
+        };
+
+
+
+
+        splashTimerTask = new TimerTask() {
+            @Override
+            public void run() {
+
+                handler.postDelayed( new Runnable() {
+
+                    public void run() {
+
+                        try {
+
+                            if ( !isNetworkAvailable() && !isOnline() ) {
+
+                                if(timerCount<3)
+                                {
+                                    timerCount++;
+                                }
+                                else
+                                {
+
+                                    connectThread.interrupt();
+
+                                    splashTimer.cancel();
+
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            connectState.setText("Sorry ,can't Connect");
+
+                                        }
+                                    },200);
+
+                                }
+                            }
+
+                            else {
+
+                                connectThread.interrupt();
+                                connectThread.join();
+                                splashTimer.cancel();
+                                Intent intent=new Intent();
+                                intent.setClass( getBaseContext(), MainActivity.class );
+                                startActivity( intent );
+
+
+                            }
+
+                        } catch (Exception e) {
+                            Log.d("yes","splashTimerTask noooooooooooooooooo");
+                        }
+                    }
+                }, 3000);
+            }
+        };
+
+        splashTimer.schedule(splashTimerTask, 0, 3500);
+        connectThread.start();
+    }
+
+
+
+    public  boolean isNetworkAvailable() {
+
+        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService( MainActivity.CONNECTIVITY_SERVICE );
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+
+    }
+
+
+
+    public  boolean isOnline () {
+
+        Runtime runtime = Runtime.getRuntime();
+
+        try {
+
+            Process ipProcess = runtime.exec( "/system/bin/ping -c 1 8.8.8.8" );
+            int exitValue = ipProcess.waitFor();
+
+            return ( exitValue == 0 );
+        }
+        catch ( IOException e ) {
+            e.printStackTrace();
+        }
+        catch ( InterruptedException e ) {
+            e.printStackTrace();
+        }
+
+        return false;
+
+    }
+}

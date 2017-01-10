@@ -153,8 +153,11 @@ public class OffersActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_favourites) {
-
+        if (id == R.id.nav_favourites)
+        {
+            Intent favorite2 = new Intent();
+            favorite2.setClass(getBaseContext(), FavoriteActivity.class);
+            startActivity(favorite2);
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_help) {
@@ -371,13 +374,15 @@ public class OffersActivity extends AppCompatActivity
                                     offerCover.setScaleType(ImageView.ScaleType.FIT_CENTER);
                                     offerCover.setBackgroundResource(R.drawable.spin_animation);
 
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            // Get the background, which has been compiled to an AnimationDrawable object.
+                                            AnimationDrawable frameAnimation = (AnimationDrawable) offerCover.getBackground();
 
-                                    // Get the background, which has been compiled to an AnimationDrawable object.
-                                    AnimationDrawable frameAnimation = (AnimationDrawable) offerCover.getBackground();
-
-                                    // Start the animation (looped playback by default).
-                                    frameAnimation.start();
-
+                                            // Start the animation (looped playback by default).
+                                            frameAnimation.start();
+                                        }});
 
                                     tr[0].setId( 1100+i) ;
 

@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -70,7 +72,7 @@ public class LatestFragment extends Fragment implements Positioning{
         final TableLayout mTlayout = (TableLayout)rootView.findViewById(R.id.latest_table);
         final TableRow[] tr = {new TableRow(getContext())};
 
-        Thread setupTab = new Thread() {
+        Thread setupTab2 = new Thread() {
 
             @Override
             public void run() {
@@ -179,14 +181,20 @@ public class LatestFragment extends Fragment implements Positioning{
                     offerCover.setBackgroundResource(R.drawable.spin_animation);
 
 
-                    // Get the background, which has been compiled to an AnimationDrawable object.
-                    AnimationDrawable frameAnimation = (AnimationDrawable) offerCover.getBackground();
+                    final Handler handler = new Handler(Looper.getMainLooper());
+                    handler.postDelayed(new Runnable() {
+                        public void run() {
+                            // Get the background, which has been compiled to an AnimationDrawable object.
+                            AnimationDrawable frameAnimation = (AnimationDrawable) offerCover.getBackground();
 
-                    // Start the animation (looped playback by default).
-                    frameAnimation.start();
+                            // Start the animation (looped playback by default).
+                            frameAnimation.start();
+                        }
+                    }, 200);
 
 
-                    tr[0].setId( 1100+i) ;
+
+                    tr[0].setId( 1200+i) ;
 
                     LinearLayout l1=new LinearLayout(getContext());
                     l1.setOrientation(LinearLayout.HORIZONTAL);
@@ -224,8 +232,8 @@ public class LatestFragment extends Fragment implements Positioning{
 
                             Intent pdfViewer = new Intent( );
                             int tableRowId = v.getId();
-                            String pdfUrl = MainActivity.latestOffersList.get(tableRowId-1100).getPDF_URL();
-                            int idoffer = MainActivity.latestOffersList.get(tableRowId-1100).getId();
+                            String pdfUrl = MainActivity.latestOffersList.get(tableRowId-1200).getPDF_URL();
+                            int idoffer = MainActivity.latestOffersList.get(tableRowId-1200).getId();
                             Toast.makeText(getContext(),pdfUrl,Toast.LENGTH_SHORT).show();
                             Log.i("getAllImages", "setOnClickListener: " +pdfUrl);
                             pdfViewer.putExtra(Key,pdfUrl);
@@ -244,8 +252,8 @@ public class LatestFragment extends Fragment implements Positioning{
 
 
         try {
-            setupTab.start();
-            setupTab.join();
+            setupTab2.start();
+            setupTab2.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
