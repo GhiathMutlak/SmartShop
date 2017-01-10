@@ -4,6 +4,8 @@ package com.applefish.smartshop.classes;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -113,12 +115,18 @@ public class StoresFragment extends Fragment implements Positioning {
             storeLogo.setScaleType(ImageView.ScaleType.FIT_CENTER);
             storeLogo.setBackgroundResource(R.drawable.spin_animation);
 
+            final Handler handler = new Handler(Looper.getMainLooper());
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    // Get the background, which has been compiled to an AnimationDrawable object.
+                    AnimationDrawable frameAnimation = (AnimationDrawable) storeLogo.getBackground();
 
-            // Get the background, which has been compiled to an AnimationDrawable object.
-            AnimationDrawable frameAnimation = (AnimationDrawable) storeLogo.getBackground();
+                    // Start the animation (looped playback by default).
+                    frameAnimation.start();
+                }
+            }, 200);
 
-            // Start the animation (looped playback by default).
-            frameAnimation.start();
+
 
             //add id for imageButton  &  linearLayout1
             storeLogo.setId(1000 + i);

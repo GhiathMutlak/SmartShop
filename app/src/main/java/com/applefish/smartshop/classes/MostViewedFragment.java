@@ -6,6 +6,8 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -177,12 +179,17 @@ public class MostViewedFragment extends Fragment implements Positioning{
                     offerCover.setScaleType(ImageView.ScaleType.FIT_CENTER);
                     offerCover.setBackgroundResource(R.drawable.spin_animation);
 
+                    final Handler handler = new Handler(Looper.getMainLooper());
+                            handler.postDelayed(new Runnable() {
+                                public void run() {
+                                    // Get the background, which has been compiled to an AnimationDrawable object.
+                                    AnimationDrawable frameAnimation = (AnimationDrawable) offerCover.getBackground();
 
-                    // Get the background, which has been compiled to an AnimationDrawable object.
-                    AnimationDrawable frameAnimation = (AnimationDrawable) offerCover.getBackground();
+                                    // Start the animation (looped playback by default).
+                                    frameAnimation.start();
+                                }
+                                                   }, 200);
 
-                    // Start the animation (looped playback by default).
-                    frameAnimation.start();
 
 
                     tr[0].setId( 1100+i) ;

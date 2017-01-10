@@ -1,10 +1,14 @@
 package com.applefish.smartshop.activities;
 
 import android.app.PendingIntent;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -60,7 +64,8 @@ public class MainActivity extends AppCompatActivity
      */
 
     String storesResult;
-
+    String latestResult;
+    String mostViewedResult;
     private static final String TAG_RESULTS = "result";
     private static final String TAG_ID = "id";
     public static final String TAG_NAME = "storeName";
@@ -132,27 +137,95 @@ public class MainActivity extends AppCompatActivity
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+                    // new pager Adapter and TabLayout
+            tabLayout = (TabLayout) findViewById(R.id.tabs);
+            tabLayout.addTab(tabLayout.newTab().setText("Latest"));
+            tabLayout.addTab(tabLayout.newTab().setText("Most Viewed"));
+            tabLayout.addTab(tabLayout.newTab().setText("Stores"));
+            tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-        // new pager Adapter and TabLayout
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.addTab(tabLayout.newTab().setText("Latest"));
-        tabLayout.addTab(tabLayout.newTab().setText("Most Viewed"));
-        tabLayout.addTab(tabLayout.newTab().setText("Stores"));
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+            viewPager = (ViewPager) findViewById(R.id.container);
+            viewPager.setOffscreenPageLimit(2);
 
-        viewPager = (ViewPager) findViewById(R.id.container);
 //        viewPager.setVisibility(View.GONE);
+        final Handler handler = new Handler(Looper.getMainLooper());
+        runOnUiThread(new Runnable() {
+            public void run() {
+                displayViewPagerContent();
+            }
+        });
 
-        final PagerAdapter adapter = new PagerAdapter
-                ( getSupportFragmentManager(), tabLayout.getTabCount() );
-        viewPager.setAdapter(adapter);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+    }
+    public  void displayViewPagerContent()
+    {
+     try
+     {
 
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        final Handler handler = new Handler(Looper.getMainLooper());
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                handler.postDelayed(new Runnable() {
+
+                    @Override
+                    public void run() {
+
+
+                   if( storesResult != null && latestResult != null && mostViewedResult != null ){
+                            final PagerAdapter adapter = new PagerAdapter
+                                    (getSupportFragmentManager(), tabLayout.getTabCount());
+                            viewPager.setAdapter(adapter);
+                            viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+
+//        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+//
+//            @Override
+//            public void onTabSelected(TabLayout.Tab tab) {
+//                viewPager.setCurrentItem(tab.getPosition());
+//            }
+//
+//            @Override
+//            public void onTabUnselected(TabLayout.Tab tab) {
+//
+//            }
+//
+//            @Override
+//            public void onTabReselected(TabLayout.Tab tab) {
+//
+//            }
+//        });
+
+//        viewPager.setVisibility(View.VISIBLE);
+
+                            tabLayout.addOnTabSelectedListener(onTabSelectedListener(viewPager));
+                        }
+                        else
+                   {
+                       displayViewPagerContent();
+                   }
+                    }
+                }, 2000);
+            }
+        });
+
+
+
+    } catch (Exception e) {
+        Log.i("ddddddddddddddddddddddd", "onCreate: " +e);
+    }
+    }
+    private TabLayout.OnTabSelectedListener onTabSelectedListener(final ViewPager Pager)
+    {
+
+        return  new TabLayout.OnTabSelectedListener(){
+
 
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
+                Pager.setCurrentItem(tab.getPosition());
+
+                Log.i("OnTabSelectedListener","position="+tab.getPosition());
+
             }
 
             @Override
@@ -164,9 +237,7 @@ public class MainActivity extends AppCompatActivity
             public void onTabReselected(TabLayout.Tab tab) {
 
             }
-        });
-
-//        viewPager.setVisibility(View.VISIBLE);
+        };
     }
 
     @Override
@@ -176,7 +247,8 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+          //  super.onBackPressed();
+                moveTaskToBack(true);
         }
 
     }
@@ -189,7 +261,9 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_favourites) {
-
+            Intent favorite = new Intent();
+            favorite.setClass(getBaseContext(), FavoriteActivity.class);
+            startActivity(favorite);
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_help) {
@@ -286,6 +360,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             protected void onPostExecute(String result) {
                 super.onPostExecute(result);
+                latestResult=result;
                 buildOffersList(result,"latest");
             }
         }
@@ -326,6 +401,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             protected void onPostExecute(String result) {
                 super.onPostExecute(result);
+                mostViewedResult=result;
                 buildOffersList(result,"mostViewed");
             }
         }
@@ -333,11 +409,13 @@ public class MainActivity extends AppCompatActivity
         GetStores getStores = new GetStores();
         getStores.execute( STORES_URL );
 
+        GetMostViewed getMostViewed = new GetMostViewed( );
+        getMostViewed.execute( MOST_VIEWED_URL );
+
         GetLatest getLatest = new GetLatest();
         getLatest.execute( LATEST_URL );
 
-        GetMostViewed getMostViewed = new GetMostViewed( );
-        getMostViewed.execute( MOST_VIEWED_URL );
+
 
     }
 
