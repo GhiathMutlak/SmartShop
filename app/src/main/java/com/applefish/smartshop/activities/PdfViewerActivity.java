@@ -45,7 +45,7 @@ public class PdfViewerActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     PDFView pdfView;
     //private static final String AddView_URL = "http://192.168.1.2/smartshop/addview.php";
-    private static final String AddView_URL = "http://gherasbirr.org/smartshop/addview.php";
+    private static final String AddView_URL = "http://samrtshop-uae.org/smartshop/addview.php";
     private  int pdfsize=0;
     private CheckBox starBTN;
     @Override

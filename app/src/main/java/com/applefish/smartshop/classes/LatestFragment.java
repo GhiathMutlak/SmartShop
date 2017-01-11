@@ -27,13 +27,12 @@ import com.applefish.smartshop.activities.MainActivity;
 import com.applefish.smartshop.activities.PdfViewerActivity;
 
 
-public class LatestFragment extends Fragment implements Positioning{
+public class LatestFragment extends Fragment {
 
     final static String Key = "com.applefish.smartshop.PdfViewer";
     final static String Key2 = "com.applefish.smartshop.IDOffer";
 
     private View rootView;
-    private static int position = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -188,7 +187,7 @@ public class LatestFragment extends Fragment implements Positioning{
                             AnimationDrawable frameAnimation = (AnimationDrawable) offerCover.getBackground();
 
                             // Start the animation (looped playback by default).
-                            frameAnimation.start();
+//                            frameAnimation.start();
                         }
                     }, 200);
 
@@ -261,10 +260,4 @@ public class LatestFragment extends Fragment implements Positioning{
 
     }
 
-
-
-    @Override
-    public int getPosition() {
-        return position;
-    }
 }

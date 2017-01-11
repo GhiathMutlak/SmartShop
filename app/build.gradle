@@ -29,5 +29,6 @@ dependencies {
     compile 'com.android.support:design:25.1.0'
     compile 'com.github.barteksc:android-pdf-viewer:2.3.0'
     compile 'com.android.support:support-v4:25.1.0'
+    compile 'com.mcxiaoke.volley:library-aar:1.0.0'
     testCompile 'junit:junit:4.12'
 }

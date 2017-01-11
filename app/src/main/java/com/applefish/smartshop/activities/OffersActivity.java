@@ -67,7 +67,7 @@ public class OffersActivity extends AppCompatActivity
     public static final String TAG_SPECIFICATION ="specification";
     public static final String TAG_STORE_IDSTORE="store_idstore";
 //    private static final String OFFERS_URL = "http://192.168.1.2/smartshop/idid.php";
-    private static final String OFFERS_URL ="http://gherasbirr.org/smartshop/idid.php";
+    private static final String OFFERS_URL ="http://samrtshop-uae.org/smartshop/idid.php";
     private static ArrayList<Offer> offersList;
     private static ArrayList<ImageButton> offersCoversList;
     private static JSONArray offersArray = null;

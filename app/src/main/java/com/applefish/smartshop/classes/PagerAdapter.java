@@ -10,7 +10,6 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
 
-    private static int previousPosition = -1;
     private int numOfTabs;
 
     public PagerAdapter(FragmentManager fm, int NumOfTabs) {
@@ -21,7 +20,6 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
 
-      //  position = (previousPosition++)%3;
         switch (position) {
             case 0:
                 LatestFragment tab1 = new LatestFragment();
@@ -39,15 +37,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
 
     public int getItemPosition(Object item) {
-
-        Positioning fragment = (Positioning) item;
-        int position = fragment.getPosition();
-
-        if (position >= 0) {
-            return position;
-        } else {
             return POSITION_NONE;
-        }
     }
 
     @Override
