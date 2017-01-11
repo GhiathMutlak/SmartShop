@@ -17,6 +17,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -46,7 +47,7 @@ import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SwipeRefreshLayout.OnRefreshListener {
 
 
     /**
@@ -66,14 +67,16 @@ public class MainActivity extends AppCompatActivity
     String storesResult;
     String latestResult;
     String mostViewedResult;
+
+    private String TAG = MainActivity.class.getSimpleName();
     private static final String TAG_RESULTS = "result";
     private static final String TAG_ID = "id";
     public static final String TAG_NAME = "storeName";
     private static final String TAG_ADD ="logoUrl";
 
-    private static final String STORES_URL = "http://gherasbirr.org/smartshop/retrivelogo.php";
-    private static final String LATEST_URL = "http://gherasbirr.org/smartshop/date.php";
-    private static final String MOST_VIEWED_URL = "http://gherasbirr.org/smartshop/view.php";
+    private static final String STORES_URL = "http://samrtshop-uae.org/smartshop/retrivelogo.php";
+    private static final String LATEST_URL = "http://samrtshop-uae.org/smartshop/date.php";
+    private static final String MOST_VIEWED_URL = "http://samrtshop-uae.org/smartshop/view.php";
 
     public static ArrayList<Store> storesList;
     public static ArrayList<Offer> latestOffersList;
@@ -89,8 +92,11 @@ public class MainActivity extends AppCompatActivity
 
     private static JSONArray storesArray = null;
 
-    static TabLayout tabLayout;
-    static ViewPager viewPager;
+    private Toolbar toolbar;
+    private DrawerLayout drawer;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+    private SwipeRefreshLayout swipeRefreshLayout;
     static Thread getData;
 
     @Override
@@ -98,10 +104,10 @@ public class MainActivity extends AppCompatActivity
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -137,18 +143,37 @@ public class MainActivity extends AppCompatActivity
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-                    // new pager Adapter and TabLayout
-            tabLayout = (TabLayout) findViewById(R.id.tabs);
-            tabLayout.addTab(tabLayout.newTab().setText("Latest"));
-            tabLayout.addTab(tabLayout.newTab().setText("Most Viewed"));
-            tabLayout.addTab(tabLayout.newTab().setText("Stores"));
-            tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-            viewPager = (ViewPager) findViewById(R.id.container);
-            viewPager.setOffscreenPageLimit(2);
+        // new pager Adapter and TabLayout
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.addTab(tabLayout.newTab().setText("Latest"));
+        tabLayout.addTab(tabLayout.newTab().setText("Most Viewed"));
+        tabLayout.addTab(tabLayout.newTab().setText("Stores"));
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-//        viewPager.setVisibility(View.GONE);
-        final Handler handler = new Handler(Looper.getMainLooper());
+        viewPager = (ViewPager) findViewById(R.id.container);
+        viewPager.setOffscreenPageLimit(2);
+
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(this);
+
+        /**
+         * Showing Swipe Refresh animation on activity create
+         * As animation won't start on onCreate, post runnable is used
+         */
+        /*swipeRefreshLayout.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        swipeRefreshLayout.setRefreshing(true);
+                                        runOnUiThread(new Runnable() {
+                                            public void run() {
+                                                displayViewPagerContent();
+                                            }
+                                        });
+                                    }
+                                }
+        );*/
+
         runOnUiThread(new Runnable() {
             public void run() {
                 displayViewPagerContent();
@@ -156,64 +181,49 @@ public class MainActivity extends AppCompatActivity
         });
 
     }
-    public  void displayViewPagerContent()
-    {
-     try
-     {
 
-        final Handler handler = new Handler(Looper.getMainLooper());
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                handler.postDelayed(new Runnable() {
+    public  void displayViewPagerContent() {
 
+             try
+             {
+
+                final Handler handler = new Handler(Looper.getMainLooper());
+
+                runOnUiThread( new Runnable() {
                     @Override
                     public void run() {
+                        handler.postDelayed(new Runnable() {
+
+                            @Override
+                            public void run() {
 
 
-                   if( storesResult != null && latestResult != null && mostViewedResult != null ){
-                            final PagerAdapter adapter = new PagerAdapter
-                                    (getSupportFragmentManager(), tabLayout.getTabCount());
-                            viewPager.setAdapter(adapter);
-                            viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+                           if( storesResult != null && latestResult != null && mostViewedResult != null ){
+                                    final PagerAdapter adapter = new PagerAdapter
+                                            (getSupportFragmentManager(), tabLayout.getTabCount());
+                                    viewPager.setAdapter(adapter);
+                                    viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
-//        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-//
-//            @Override
-//            public void onTabSelected(TabLayout.Tab tab) {
-//                viewPager.setCurrentItem(tab.getPosition());
-//            }
-//
-//            @Override
-//            public void onTabUnselected(TabLayout.Tab tab) {
-//
-//            }
-//
-//            @Override
-//            public void onTabReselected(TabLayout.Tab tab) {
-//
-//            }
-//        });
-
-//        viewPager.setVisibility(View.VISIBLE);
-
-                            tabLayout.addOnTabSelectedListener(onTabSelectedListener(viewPager));
-                        }
-                        else
-                   {
-                       displayViewPagerContent();
-                   }
+                                    tabLayout.addOnTabSelectedListener(onTabSelectedListener(viewPager));
+                                }
+                                else
+                           {
+                               displayViewPagerContent();
+                           }
+                            }
+                        }, 2000);
                     }
-                }, 2000);
+                });
+
+
+
+            } catch (Exception e) {
+                Log.i("ddddddddddddddddddddddd", "onCreate: " +e);
             }
-        });
 
-
-
-    } catch (Exception e) {
-        Log.i("ddddddddddddddddddddddd", "onCreate: " +e);
     }
-    }
+
+
     private TabLayout.OnTabSelectedListener onTabSelectedListener(final ViewPager Pager)
     {
 
@@ -261,9 +271,11 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_favourites) {
+
             Intent favorite = new Intent();
             favorite.setClass(getBaseContext(), FavoriteActivity.class);
             startActivity(favorite);
+
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_help) {
@@ -746,4 +758,29 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    @Override
+    public void onRefresh() {
+
+        // showing refresh animation before making http call
+        swipeRefreshLayout.setRefreshing(true);
+
+        runOnUiThread(new Runnable() {
+            public void run() {
+                Log.i("onRefresh "," Rfreshing ......");
+
+                try {
+                    getData.start();
+                    getData.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                displayViewPagerContent();
+            }
+        });
+
+        // stopping swipe refresh
+        swipeRefreshLayout.setRefreshing(false);
+
+    }
 }

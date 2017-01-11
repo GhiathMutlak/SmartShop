@@ -24,25 +24,19 @@ public class SplashScreenActivity extends AppCompatActivity {
     private TextView connectState;
     Thread connectThread;
 
-    private Handler handler=new Handler(Looper.getMainLooper());
-    private Timer splashTimer=new Timer();
+    private Handler handler = new Handler( Looper.getMainLooper() );
+    private Timer splashTimer = new Timer();
     private TimerTask splashTimerTask;
-    private int timerCount=0;
-    boolean coonectCheck=false;
+    private int timerCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        //no title bar FEATURE_NO_TITLE
-//        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-//
-//        //full screen
-//        getWindow().setFlags( WindowManager.LayoutParams.FLAG_FULLSCREEN, 0 );
+        setContentView( R.layout.activity_splash_screen );
 
-        setContentView(R.layout.activity_splash_screen);
+        connectState = (TextView)findViewById( R.id.connectState );
 
-        connectState=(TextView)findViewById(R.id.connectState);
         connectThread = new Thread() {
 
             @Override
@@ -119,10 +113,9 @@ public class SplashScreenActivity extends AppCompatActivity {
                                 connectThread.interrupt();
                                 connectThread.join();
                                 splashTimer.cancel();
-                                Intent intent=new Intent();
+                                Intent intent = new Intent();
                                 intent.setClass( getBaseContext(), MainActivity.class );
                                 startActivity( intent );
-
 
                             }
 
@@ -140,7 +133,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
 
 
-    public  boolean isNetworkAvailable() {
+    public boolean isNetworkAvailable() {
 
         ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService( MainActivity.CONNECTIVITY_SERVICE );
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
@@ -151,7 +144,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
 
 
-    public  boolean isOnline () {
+    public boolean isOnline () {
 
         Runtime runtime = Runtime.getRuntime();
 

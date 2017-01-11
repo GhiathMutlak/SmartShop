@@ -24,10 +24,9 @@ import com.applefish.smartshop.activities.OffersActivity;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class StoresFragment extends Fragment implements Positioning {
+public class StoresFragment extends Fragment {
 
     private View rootView;
-    private static int position = 2;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -55,7 +54,6 @@ public class StoresFragment extends Fragment implements Positioning {
         }
 
         MainActivity.getStoresImages();
-
 
         return rootView;
     }
@@ -122,7 +120,7 @@ public class StoresFragment extends Fragment implements Positioning {
                     AnimationDrawable frameAnimation = (AnimationDrawable) storeLogo.getBackground();
 
                     // Start the animation (looped playback by default).
-                    frameAnimation.start();
+//                    frameAnimation.start();
                 }
             }, 200);
 
@@ -175,9 +173,4 @@ public class StoresFragment extends Fragment implements Positioning {
 
     }
 
-
-    @Override
-    public int getPosition() {
-        return position;
-    }
 }

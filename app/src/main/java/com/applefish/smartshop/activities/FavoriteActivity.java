@@ -63,7 +63,7 @@ public class FavoriteActivity extends AppCompatActivity {
     private static final String TAG_SPECIFICATION ="specification";
     private static final String TAG_STORE_IDSTORE="store_idstore";
     //private static final String FAV_OFFERS_URL = "http://192.168.1.2/smartshop/favorite.php";
-    private static final String FAV_OFFERS_URL ="http://gherasbirr.org/smartshop/favorite.php";
+    private static final String FAV_OFFERS_URL ="http://samrtshop-uae.org/smartshop/favorite.php";
     private static ArrayList<Offer> offersList;
     private static ArrayList<ImageButton> offersCoversList;
     private static JSONArray offersArray = null;
@@ -222,16 +222,6 @@ public class FavoriteActivity extends AppCompatActivity {
                     }
 
 
-                   // getAllImages();
-
-                  //  {
-
-
-//                        if(offersList.size()>0)
-//                            this.findViewById(R.id.).setVisibility(View.GONE);
-
-                        //offersCoversList.clear();
-
                         Thread setupTable = new Thread() {
 
                             @Override
@@ -324,22 +314,10 @@ public class FavoriteActivity extends AppCompatActivity {
                                                rlp5.weight=1;
                                             rlp5.gravity=Gravity.CENTER;
 
-                                          //  rlp5.leftMargin=20;
-                                            // rlp.gravity= Gravity.CENTER;
-                                            //  rlp5.bottomMargin=20;
-
-//                                            // RelativeLayout  Params  apply on child (imageButton )
-//                                            RelativeLayout.LayoutParams rlp6 = new RelativeLayout.LayoutParams( 52, 52);
-//                                            rlp6.addRule(RelativeLayout.CENTER_HORIZONTAL);
-//                                            rlp6.addRule(RelativeLayout.CENTER_VERTICAL);
-//                                            rlp6.leftMargin=10;
-//                                            rlp6.rightMargin=10;
-
 
                                             //set layout params
                                            // relativeLayout.setLayoutParams(rlp);
                                          linearLayout.setLayoutParams(rlp2);
-  //linearLayout.setBackgroundColor(Color.LTGRAY);
                                            // offerCover.setLayoutParams(rlp6);
                                             numOfPages.setLayoutParams(rlp3);
                                            date.setLayoutParams(rlp3);
@@ -348,16 +326,6 @@ public class FavoriteActivity extends AppCompatActivity {
                                             tr[0].setBackgroundResource(R.drawable.mybutton_background);
                                             tr[0].setAddStatesFromChildren(true); // <<<<  this line is the best in the world
 
-                                           // offerCover.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                                           // offerCover.setBackgroundResource(R.drawable.spin_animation);
-
-
-                                            // Get the background, which has been compiled to an AnimationDrawable object.
-                                       //     AnimationDrawable frameAnimation = (AnimationDrawable) offerCover.getBackground();
-
-                                            // Start the animation (looped playback by default).
-                                         //   frameAnimation.start();
-
 
                                             tr[0].setId( 1100+i) ;
 
@@ -365,32 +333,17 @@ public class FavoriteActivity extends AppCompatActivity {
                                             l1.setGravity(Gravity.CENTER_HORIZONTAL);
                                             l1.setOrientation(LinearLayout.HORIZONTAL);
                                             l1.setLayoutParams(rlp5);
-//l1.setBackgroundColor(Color.RED);
                                             //View v1=new View(getBaseContext());
 
                                             l1.addView(title);
                                             //l1.addView(v1);
 
-//                                            LinearLayout l2=new LinearLayout(getBaseContext());
-//                                            l2.setOrientation(LinearLayout.HORIZONTAL);
-//                                            l2.addView(numOfPages);
-//l2.setBackgroundColor(Color.GREEN);
-//                                            LinearLayout l3=new LinearLayout(getBaseContext());
-//                                            l3.setOrientation(LinearLayout.HORIZONTAL);
-//                                           // View v3=new View(getBaseContext());
-//                                            l3.addView(date);
-//                                           // l3.addView(v3);
-//l3.setBackgroundColor(Color.YELLOW);
                                             LinearLayout l4=new LinearLayout(getBaseContext());
                                             l4.setOrientation(LinearLayout.HORIZONTAL);
                                            // View v4=new View(getBaseContext());
                                             l4.setLayoutParams(rlp5);
                                             l4.addView(date);
                                             l4.addView(numOfPages);
-                                           // l4.addView(v4);
-//l4.setBackgroundColor(Color.CYAN);
-                                            //add  View
-                                            //relativeLayout.addView(offerCover);
                                             linearLayout.addView(l1);
                                             linearLayout.addView(l4);
 
@@ -436,9 +389,6 @@ public class FavoriteActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
 
-//                     OffersActivity.setImageBitmap();
-
-           //         }
 
                 }
                 else {
@@ -456,20 +406,21 @@ public class FavoriteActivity extends AppCompatActivity {
     }
 
 
-    public String readSharedPreference()
-    {
-        SharedPreferences sharedPref =getBaseContext().getSharedPreferences("com.applefish.smartshop.FAVORITE_KEY",MODE_PRIVATE);
+    public String readSharedPreference() {
+        SharedPreferences sharedPref = getBaseContext().getSharedPreferences("com.applefish.smartshop.FAVORITE_KEY",MODE_PRIVATE);
         //0 is default_value if no vaule
-        String savedFavoriteOffer = sharedPref .getString(getString(R.string.saved_favorite), "");
+        String savedFavoriteOffer = sharedPref.getString(getString(R.string.saved_favorite), "");
 
         return savedFavoriteOffer;
     }
-    public  void  writeSharedPreference(String savedFavoriteOffer)
-    {
-        SharedPreferences sharedPref =getBaseContext().getSharedPreferences("com.applefish.smartshop.FAVORITE_KEY",MODE_PRIVATE);
+
+    public  void  writeSharedPreference(String savedFavoriteOffer) {
+
+        SharedPreferences sharedPref = getBaseContext().getSharedPreferences("com.applefish.smartshop.FAVORITE_KEY",MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(getString(R.string.saved_favorite), savedFavoriteOffer);
         editor.commit();
+
     }
 
 }
