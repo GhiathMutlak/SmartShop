@@ -67,7 +67,7 @@ public class OffersActivity extends AppCompatActivity
     public static final String TAG_SPECIFICATION ="specification";
     public static final String TAG_STORE_IDSTORE="store_idstore";
 //    private static final String OFFERS_URL = "http://192.168.1.2/smartshop/idid.php";
-    private static final String OFFERS_URL ="http://samrtshop-uae.org/smartshop/idid.php";
+    private static final String OFFERS_URL ="http://smartshop-uae.org/smartshop/idid.php";
     private static ArrayList<Offer> offersList;
     private static ArrayList<ImageButton> offersCoversList;
     private static JSONArray offersArray = null;
@@ -159,11 +159,19 @@ public class OffersActivity extends AppCompatActivity
             favorite2.setClass(getBaseContext(), FavoriteActivity.class);
             startActivity(favorite2);
         } else if (id == R.id.nav_share) {
-
+            Intent shareIntent = new Intent();
+            shareIntent.setAction(Intent.ACTION_SEND);
+            shareIntent.putExtra(Intent.EXTRA_TEXT,"DownLoad Smart Shopp UAE Android App To Know Before Shop -------URL for App in AppStore-----");
+            shareIntent.setType("text/plain");
+            startActivity(shareIntent);
         } else if (id == R.id.nav_help) {
-
+            Intent help = new Intent();
+            help.setClass(getBaseContext(), HelpActivity.class);
+            startActivity(help);
         } else if (id == R.id.nav_settings) {
-
+            Intent settings = new Intent();
+            settings.setClass(getBaseContext(), SettingActivity.class);
+            startActivity(settings);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

@@ -13,6 +13,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.applefish.smartshop.R;
+import com.applefish.smartshop.classes.ConnectChecked;
 
 import java.io.IOException;
 import java.util.Timer;
@@ -84,7 +85,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
                         try {
 
-                            if ( !isNetworkAvailable() && !isOnline() ) {
+                            if ( !ConnectChecked.isNetworkAvailable(getBaseContext()) && !ConnectChecked.isOnline() ) {
 
                                 if(timerCount<3)
                                 {
@@ -133,36 +134,5 @@ public class SplashScreenActivity extends AppCompatActivity {
 
 
 
-    public boolean isNetworkAvailable() {
 
-        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService( MainActivity.CONNECTIVITY_SERVICE );
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-
-        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
-
-    }
-
-
-
-    public boolean isOnline () {
-
-        Runtime runtime = Runtime.getRuntime();
-
-        try {
-
-            Process ipProcess = runtime.exec( "/system/bin/ping -c 1 8.8.8.8" );
-            int exitValue = ipProcess.waitFor();
-
-            return ( exitValue == 0 );
-        }
-        catch ( IOException e ) {
-            e.printStackTrace();
-        }
-        catch ( InterruptedException e ) {
-            e.printStackTrace();
-        }
-
-        return false;
-
-    }
 }

@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/nav_header_height"
+    android:layout_height="wrap_content"
 
 
     android:orientation="vertical"
@@ -11,31 +11,32 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:background="#179AE1"
     android:theme="@style/ThemeOverlay.AppCompat.Dark"
-    android:weightSum="100">
+    android:weightSum="100"
+    app:layout_collapseParallaxMultiplier="1.0">
 
     <ImageView
-
         android:id="@+id/imageView"
+
         android:layout_width="150dp"
         android:layout_height="0dp"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="70"
-        android:background="@drawable/ssuae2" />
+        android:layout_weight="40"
+        android:background="@drawable/ssuae2"
+        />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
 
         android:text="Smart Shop UAE"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:layout_weight="15"/>
+        android:layout_weight="30"/>
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-
         android:text="To KNOW Before Shop"
-        android:layout_weight="15"/>
+        android:layout_weight="30"/>
 
 </LinearLayout>
