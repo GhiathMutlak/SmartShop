@@ -1,6 +1,7 @@
 package com.applefish.smartshop.activities;
 
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -24,14 +25,18 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.applefish.smartshop.R;
 import com.applefish.smartshop.classes.Offer;
 import com.applefish.smartshop.classes.PagerAdapter;
 import com.applefish.smartshop.classes.Store;
+import com.applefish.smartshop.fcm.SharedPrefManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,6 +49,16 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 
 public class MainActivity extends AppCompatActivity
@@ -64,6 +79,8 @@ public class MainActivity extends AppCompatActivity
      * The {@link ViewPager} that will host the section contents.
      */
 
+
+
     String storesResult;
     String latestResult;
     String mostViewedResult;
@@ -74,9 +91,9 @@ public class MainActivity extends AppCompatActivity
     public static final String TAG_NAME = "storeName";
     private static final String TAG_ADD ="logoUrl";
 
-    private static final String STORES_URL = "http://samrtshop-uae.org/smartshop/retrivelogo.php";
-    private static final String LATEST_URL = "http://samrtshop-uae.org/smartshop/date.php";
-    private static final String MOST_VIEWED_URL = "http://samrtshop-uae.org/smartshop/view.php";
+    private static final String STORES_URL = "http://smartshop-uae.org/smartshop/retrivelogo.php";
+    private static final String LATEST_URL = "http://smartshop-uae.org/smartshop/date.php";
+    private static final String MOST_VIEWED_URL = "http://smartshop-uae.org/smartshop/view.php";
 
     public static ArrayList<Store> storesList;
     public static ArrayList<Offer> latestOffersList;
@@ -104,6 +121,9 @@ public class MainActivity extends AppCompatActivity
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -181,6 +201,7 @@ public class MainActivity extends AppCompatActivity
         });
 
     }
+
 
     public  void displayViewPagerContent() {
 
@@ -277,11 +298,19 @@ public class MainActivity extends AppCompatActivity
             startActivity(favorite);
 
         } else if (id == R.id.nav_share) {
-
+            Intent shareIntent = new Intent();
+            shareIntent.setAction(Intent.ACTION_SEND);
+            shareIntent.putExtra(Intent.EXTRA_TEXT,"DownLoad Smart Shopp UAE Android App To Know Before Shop -------URL for App in AppStore-----");
+            shareIntent.setType("text/plain");
+            startActivity(shareIntent);
         } else if (id == R.id.nav_help) {
-
+            Intent help = new Intent();
+            help.setClass(getBaseContext(), HelpActivity.class);
+            startActivity(help);
         } else if (id == R.id.nav_settings) {
-
+            Intent settings = new Intent();
+            settings.setClass(getBaseContext(), SettingActivity.class);
+            startActivity(settings);
         }
 
 
@@ -332,6 +361,9 @@ public class MainActivity extends AppCompatActivity
                super.onPostExecute(result);
                 storesResult = result;
                 buildStoresList();
+                // stopping swipe refresh
+                if(swipeRefreshLayout.isRefreshing())
+                    swipeRefreshLayout.setRefreshing(false);
             }
         }
 
@@ -374,6 +406,7 @@ public class MainActivity extends AppCompatActivity
                 super.onPostExecute(result);
                 latestResult=result;
                 buildOffersList(result,"latest");
+
             }
         }
 
@@ -768,6 +801,24 @@ public class MainActivity extends AppCompatActivity
             public void run() {
                 Log.i("onRefresh "," Rfreshing ......");
 
+//                try {
+
+                   // getData.start();
+                    //getData.join();
+
+
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                    getData.start();
+//                }
+                getData = new Thread(){
+                    @Override
+                    public void run() {
+                        getJSON(  );
+                    }
+                };
+
+
                 try {
                     getData.start();
                     getData.join();
@@ -776,11 +827,10 @@ public class MainActivity extends AppCompatActivity
                 }
 
                 displayViewPagerContent();
-            }
+        }
         });
 
-        // stopping swipe refresh
-        swipeRefreshLayout.setRefreshing(false);
+
 
     }
 }

@@ -12,7 +12,7 @@
 
     <string name="favourites">Favourites</string>
     <string name="share">Share</string>
-    <string name="help">Help</string>
+    <string name="help">About and Help</string>
     <string name="title_activity_main2">Main2Activity</string>
 
     <string name="action_settings">Settings</string>
@@ -25,4 +25,12 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_splash_screen">SplashScreenActivity</string>
+    <string name="title_activity_setting">Setting</string>
+    <string name="title_activity_help">HelpActivity</string>
+
+
+    <string name="help1">\n Version 1.0 \n Developed By :\n ------------------------</string>
+    <string name="help2">For Support ,Please connect us on the Following email \n supp.smartshop@gmail.com </string>
+
+    <string name="saved_setting">saved setting</string>
 </resources>

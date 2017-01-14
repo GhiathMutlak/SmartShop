@@ -63,7 +63,7 @@ public class FavoriteActivity extends AppCompatActivity {
     private static final String TAG_SPECIFICATION ="specification";
     private static final String TAG_STORE_IDSTORE="store_idstore";
     //private static final String FAV_OFFERS_URL = "http://192.168.1.2/smartshop/favorite.php";
-    private static final String FAV_OFFERS_URL ="http://samrtshop-uae.org/smartshop/favorite.php";
+    private static final String FAV_OFFERS_URL ="http://smartshop-uae.org/smartshop/favorite.php";
     private static ArrayList<Offer> offersList;
     private static ArrayList<ImageButton> offersCoversList;
     private static JSONArray offersArray = null;
@@ -105,7 +105,7 @@ public class FavoriteActivity extends AppCompatActivity {
 
             }
         });
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+      //  getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         scrollView=(ScrollView)findViewById(R.id.Scroll_fav_offer) ;
         offersList = new ArrayList<>();
