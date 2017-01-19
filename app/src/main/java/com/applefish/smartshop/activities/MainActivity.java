@@ -1,42 +1,36 @@
 package com.applefish.smartshop.activities;
 
-import android.app.PendingIntent;
-import android.app.ProgressDialog;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.applefish.smartshop.R;
+import com.applefish.smartshop.classes.ConnectChecked;
 import com.applefish.smartshop.classes.Offer;
 import com.applefish.smartshop.classes.PagerAdapter;
 import com.applefish.smartshop.classes.Store;
-import com.applefish.smartshop.fcm.SharedPrefManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,37 +43,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SwipeRefreshLayout.OnRefreshListener {
-
-
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
-//    private MainActivity.SectionsPagerAdapter sectionsPagerAdapter;
-
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-
-
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     String storesResult;
     String latestResult;
@@ -113,7 +80,6 @@ public class MainActivity extends AppCompatActivity
     private DrawerLayout drawer;
     private TabLayout tabLayout;
     private ViewPager viewPager;
-    private SwipeRefreshLayout swipeRefreshLayout;
     static Thread getData;
 
     @Override
@@ -122,10 +88,33 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        final SearchView searchView = (SearchView) findViewById(R.id.search);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+
+                Intent searchIntent = new Intent();
+                searchIntent.setClass( getBaseContext(), SearchActivity.class );
+                searchIntent.putExtra( SearchManager.QUERY , query);
+                searchIntent.setAction( Intent.ACTION_SEARCH );
+                startActivity(searchIntent);
+                return false;
+
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -135,7 +124,6 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
 
         storesList = new ArrayList<>();
         storesLogosList = new ArrayList<>();
@@ -174,36 +162,16 @@ public class MainActivity extends AppCompatActivity
         viewPager = (ViewPager) findViewById(R.id.container);
         viewPager.setOffscreenPageLimit(2);
 
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
-        swipeRefreshLayout.setOnRefreshListener(this);
-
-        /**
-         * Showing Swipe Refresh animation on activity create
-         * As animation won't start on onCreate, post runnable is used
-         */
-        /*swipeRefreshLayout.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        swipeRefreshLayout.setRefreshing(true);
-                                        runOnUiThread(new Runnable() {
-                                            public void run() {
-                                                displayViewPagerContent();
-                                            }
-                                        });
-                                    }
-                                }
-        );*/
-
         runOnUiThread(new Runnable() {
             public void run() {
-                displayViewPagerContent();
+                displayViewPagerContent( 0 );
             }
         });
 
     }
 
 
-    public  void displayViewPagerContent() {
+    public  void displayViewPagerContent(final int position) {
 
              try
              {
@@ -224,12 +192,14 @@ public class MainActivity extends AppCompatActivity
                                             (getSupportFragmentManager(), tabLayout.getTabCount());
                                     viewPager.setAdapter(adapter);
                                     viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-
                                     tabLayout.addOnTabSelectedListener(onTabSelectedListener(viewPager));
+
+                               viewPager.setCurrentItem(position);
+                               tabLayout.getTabAt(position).select();
                                 }
                                 else
                            {
-                               displayViewPagerContent();
+                               displayViewPagerContent( position );
                            }
                             }
                         }, 2000);
@@ -243,7 +213,6 @@ public class MainActivity extends AppCompatActivity
             }
 
     }
-
 
     private TabLayout.OnTabSelectedListener onTabSelectedListener(final ViewPager Pager)
     {
@@ -284,6 +253,27 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    // Menu icons are inflated just as they were with actionbar
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case R.id.refresh:
+                actionRefresh();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -298,19 +288,25 @@ public class MainActivity extends AppCompatActivity
             startActivity(favorite);
 
         } else if (id == R.id.nav_share) {
+
             Intent shareIntent = new Intent();
             shareIntent.setAction(Intent.ACTION_SEND);
             shareIntent.putExtra(Intent.EXTRA_TEXT,"DownLoad Smart Shopp UAE Android App To Know Before Shop -------URL for App in AppStore-----");
             shareIntent.setType("text/plain");
             startActivity(shareIntent);
+
         } else if (id == R.id.nav_help) {
+
             Intent help = new Intent();
             help.setClass(getBaseContext(), HelpActivity.class);
             startActivity(help);
+
         } else if (id == R.id.nav_settings) {
+
             Intent settings = new Intent();
             settings.setClass(getBaseContext(), SettingActivity.class);
             startActivity(settings);
+
         }
 
 
@@ -361,9 +357,6 @@ public class MainActivity extends AppCompatActivity
                super.onPostExecute(result);
                 storesResult = result;
                 buildStoresList();
-                // stopping swipe refresh
-                if(swipeRefreshLayout.isRefreshing())
-                    swipeRefreshLayout.setRefreshing(false);
             }
         }
 
@@ -406,7 +399,6 @@ public class MainActivity extends AppCompatActivity
                 super.onPostExecute(result);
                 latestResult=result;
                 buildOffersList(result,"latest");
-
             }
         }
 
@@ -791,46 +783,57 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    @Override
-    public void onRefresh() {
+    public void actionRefresh (){
 
-        // showing refresh animation before making http call
-        swipeRefreshLayout.setRefreshing(true);
+        if ( ConnectChecked.isNetworkAvailable( getBaseContext() ) &&
+                ConnectChecked.isOnline() ) {
 
-        runOnUiThread(new Runnable() {
-            public void run() {
-                Log.i("onRefresh "," Rfreshing ......");
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    Log.i("onRefresh "," Refreshing ......");
 
-//                try {
+                    int position = tabLayout.getSelectedTabPosition();
 
-                   // getData.start();
-                    //getData.join();
+                    storesList.clear();
+                    storesLogosList.clear();
+                    storesBitmapsList.clear();
 
+                    latestOffersList.clear();
+                    latestOffersCoversList.clear();
+                    latestBitmapsList.clear();
 
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                    getData.start();
-//                }
-                getData = new Thread(){
-                    @Override
-                    public void run() {
-                        getJSON(  );
+                    mostViewedList.clear();
+                    mostViewedCoversList.clear();
+                    mostViewedBitmapsList.clear();
+
+                    storesResult = null;
+                    latestResult = null;
+                    mostViewedResult = null;
+
+                    Thread refresh = new Thread(){
+                        @Override
+                        public void run() {
+                            getJSON(  );
+                        }
+                    };
+
+                    try {
+                        refresh.start();
+                        refresh.join();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-                };
 
+                    displayViewPagerContent( position );
 
-                try {
-                    getData.start();
-                    getData.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
+            });
 
-                displayViewPagerContent();
+        } else {
+            Snackbar.make( toolbar , "No Internet Connection", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
         }
-        });
-
-
 
     }
+
 }
