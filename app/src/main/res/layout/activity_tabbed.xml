@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/appbar_padding_top"
-        android:background="#179AE1"
+        android:background="#012970"
         android:fitsSystemWindows="true"
         android:theme="@style/AppTheme.AppBarOverlay">
 
@@ -21,12 +21,14 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:layout_scrollFlags="scroll|enterAlways"
+            android:background="@drawable/tablayout_background"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
             <android.support.v7.widget.SearchView
                 android:id="@+id/search"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+
                 >
 
             </android.support.v7.widget.SearchView>
@@ -37,6 +39,7 @@
             android:id="@+id/tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/tablayout_background"
             app:tabIndicatorColor="#9FD3EE"
             app:tabIndicatorHeight="4dp"
             >

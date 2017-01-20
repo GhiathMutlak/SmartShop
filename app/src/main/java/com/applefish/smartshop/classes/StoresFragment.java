@@ -2,11 +2,14 @@ package com.applefish.smartshop.classes;
 
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.app.Fragment;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,7 +79,10 @@ public class StoresFragment extends Fragment {
 
             TextView storeName = new TextView(getContext());
             storeName.setText(MainActivity.storesList.get(i).getStoreName());
-
+            storeName.setTypeface(null, Typeface.BOLD);
+            storeName.setGravity(Gravity.CENTER);
+            storeName.setTextColor(Color.rgb(24, 155, 226));
+            storeName.setTextSize(13);
             final ImageButton storeLogo = new ImageButton(getContext());
 
             // TableRow  Params  apply on child (RelativeLayout)
@@ -111,16 +117,17 @@ public class StoresFragment extends Fragment {
             linearLayout1.setAddStatesFromChildren(true); // <<<<  this line is the best in the world
 
             storeLogo.setScaleType(ImageView.ScaleType.FIT_CENTER);
-            storeLogo.setBackgroundResource(R.drawable.spin_animation);
+
 
             final Handler handler = new Handler(Looper.getMainLooper());
             handler.postDelayed(new Runnable() {
                 public void run() {
+                    storeLogo.setBackgroundResource(R.drawable.spin_animation);
                     // Get the background, which has been compiled to an AnimationDrawable object.
                     AnimationDrawable frameAnimation = (AnimationDrawable) storeLogo.getBackground();
 
                     // Start the animation (looped playback by default).
-//                    frameAnimation.start();
+                  frameAnimation.start();
                 }
             }, 200);
 

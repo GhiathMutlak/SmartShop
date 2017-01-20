@@ -100,12 +100,18 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public boolean onQueryTextSubmit(String query) {
-
+                if ( ConnectChecked.isNetworkAvailable( getBaseContext() ) &&
+                        ConnectChecked.isOnline() ) {
                 Intent searchIntent = new Intent();
                 searchIntent.setClass( getBaseContext(), SearchActivity.class );
                 searchIntent.putExtra( SearchManager.QUERY , query);
                 searchIntent.setAction( Intent.ACTION_SEARCH );
                 startActivity(searchIntent);
+                return false;
+                } else {
+                    Snackbar.make(toolbar, "No Internet Connection", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
                 return false;
 
             }
@@ -760,25 +766,27 @@ public class MainActivity extends AppCompatActivity
 
         // RelativeLayout  Params  apply on child (imageButton ) when on click
         final RelativeLayout.LayoutParams rlp4 = new RelativeLayout.LayoutParams(
-                200,
-                200
+                RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.MATCH_PARENT
         );
         rlp4.addRule(RelativeLayout.CENTER_HORIZONTAL);
         rlp4.addRule(RelativeLayout.CENTER_VERTICAL);
 
-            if ( list.equals("latest")) {
-                ImageButton cover = latestOffersCoversList.get(index);
-                cover.setBackgroundResource(0);
-                cover.setLayoutParams(rlp4);
-                cover.setImageBitmap(latestOffersList.get(index).getCover());
-            } else
-                if ( list.equals("mostViewed") ) {
-                    ImageButton cover = mostViewedCoversList.get(index);
-                    cover.setBackgroundResource(0);
-                    cover.setLayoutParams(rlp4);
-                    cover.setImageBitmap(mostViewedList.get(index).getCover());
-                }
+        if ( list.equals("latest")) {
+            ImageButton cover = latestOffersCoversList.get(index);
+            // cover.setBackgroundResource(0);
+            cover.setLayoutParams(rlp4);
+            cover.setBackgroundResource(R.drawable.customborder);
+            cover.setImageBitmap(latestOffersList.get(index).getCover());
 
+        } else
+        if ( list.equals("mostViewed") ) {
+            ImageButton cover = mostViewedCoversList.get(index);
+            // cover.setBackgroundResource(0);
+            cover.setLayoutParams(rlp4);
+            cover.setBackgroundResource(R.drawable.customborder);
+            cover.setImageBitmap(mostViewedList.get(index).getCover());
+        }
 
     }
 

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
@@ -59,6 +60,11 @@ public class MyNotificationManager {
                 .setLargeIcon(BitmapFactory.decodeResource(mCtx.getResources(), R.mipmap.ic_launcher2))
                 .setContentText(message)
                 .setSound(alarmSound)
+                .setWhen(System.currentTimeMillis())
+                .setVisibility(Notification.VISIBILITY_PRIVATE)
+                .setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 })
+                .setLights(Color.GREEN, 3000, 3000)
+                .setShowWhen(true)
                 .build();
 
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
@@ -90,6 +96,10 @@ public class MyNotificationManager {
                 .setLargeIcon(BitmapFactory.decodeResource(mCtx.getResources(), R.mipmap.ic_launcher2))
                 .setContentText(message)
                 .setSound(alarmSound)
+                .setVisibility(Notification.VISIBILITY_PRIVATE)
+                .setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 })
+                .setLights(Color.GREEN, 3000, 3000)
+                .setShowWhen(true)
                 .build();
 
         notification.flags |= Notification.FLAG_AUTO_CANCEL;

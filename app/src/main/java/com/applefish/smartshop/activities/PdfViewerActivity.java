@@ -22,6 +22,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.applefish.smartshop.R;
+import com.applefish.smartshop.classes.ConnectChecked;
 import com.applefish.smartshop.classes.FileDownloader;
 import com.github.barteksc.pdfviewer.PDFView;
 import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener;
@@ -33,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class PdfViewerActivity extends AppCompatActivity {
 
@@ -59,22 +61,27 @@ public class PdfViewerActivity extends AppCompatActivity {
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent shareIntent = new Intent();
+                shareIntent.setAction(Intent.ACTION_SEND);
+                shareIntent.putExtra(Intent.EXTRA_TEXT,"DownLoad Smart Shopp UAE Android App To Know Before Shop -------URL for App in AppStore-----");
+                shareIntent.setType("text/plain");
+                startActivity(shareIntent);
                 Snackbar.make(view, "Share Offer", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
 
             }
         });
 
-        final FloatingActionButton download = (FloatingActionButton) findViewById(R.id.fab2);
-        download.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                   download(view, pdfurl,PDF_Name);
-
-                Snackbar.make(view, "DownLoad File Success", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+//        final FloatingActionButton download = (FloatingActionButton) findViewById(R.id.fab2);
+//        download.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                   download(view, pdfurl,PDF_Name);
+//
+//                Snackbar.make(view, "DownLoad File Success", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+//            }
+//        });
 
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -169,19 +176,25 @@ public class PdfViewerActivity extends AppCompatActivity {
 
 
         //-------------------1------------downlaod pdf file
-        Thread getPdfsize = new Thread(){
+
+        try {
+            if (ConnectChecked.isNetworkAvailable(getBaseContext()) &&
+                    ConnectChecked.isOnline()) { Thread getPdfsize = new Thread(){
             @Override
             public void run() {
-                getPdfsize(pdfurl);
+                getPdfsize(pdfurl,true);
 
             }
         };
 
-        try {
+
             getPdfsize.start();
             getPdfsize.join();
 
-
+        } else {
+            Snackbar.make(toolbar, "No Internet Connection", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -383,7 +396,7 @@ public class PdfViewerActivity extends AppCompatActivity {
         gj.execute(url);
 
     }
-    private void getPdfsize(String url) {
+    private void getPdfsize(String url,boolean check) {
 
 
         class GetPdfSize extends AsyncTask<String, Void, String> {
@@ -421,7 +434,13 @@ public class PdfViewerActivity extends AppCompatActivity {
         }
 
         GetPdfSize gj = new GetPdfSize();
+        if(check)
         gj.execute(url);
+        else {
+
+            if(gj.isCancelled())
+                gj.cancel(true);
+        }
 
     }
 
@@ -439,6 +458,16 @@ public class PdfViewerActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(getString(R.string.saved_favorite), savedFavoriteOffer);
         editor.commit();
+    }
+
+    @Override
+    public void onBackPressed() {
+        //Stop Task
+        getPdfsize( "" ,false);
+
+        super.onBackPressed();
+
+
     }
 
 }

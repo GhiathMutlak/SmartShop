@@ -1,20 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+    <group  android:id="@+id/grp1">
         <item
             android:id="@+id/nav_favourites"
-            android:icon="@android:drawable/btn_star"
+            android:icon="@drawable/golden_star2"
             android:title="@string/favourites" />
+    </group>
+    <group  android:id="@+id/grp2">
         <item
             android:id="@+id/nav_share"
             android:icon="@drawable/ic_menu_share"
             android:title="@string/share" />
+    </group>
+    <group  android:id="@+id/grp3">
         <item
             android:id="@+id/nav_help"
             android:icon="@android:drawable/ic_menu_help"
             android:title="@string/help" />
-
+    </group>
+    <group  android:id="@+id/grp4">
         <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_action_settings"
