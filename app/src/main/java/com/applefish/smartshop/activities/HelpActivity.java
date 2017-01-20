@@ -1,5 +1,6 @@
 package com.applefish.smartshop.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -22,7 +23,18 @@ public class HelpActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                /* Create the Intent */
+                final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+
+/* Fill it with Data */
+                emailIntent.setType("plain/text");
+                emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{"supp.smartshop@gmail.com"});
+                emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject");
+                emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, "Text");
+
+/* Send it off to the Activity-Chooser */
+                startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+                Snackbar.make(view, "Send mail...", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });

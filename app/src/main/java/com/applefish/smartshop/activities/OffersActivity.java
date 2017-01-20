@@ -10,9 +10,13 @@ import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -31,6 +35,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.applefish.smartshop.R;
+import com.applefish.smartshop.classes.ConnectChecked;
 import com.applefish.smartshop.classes.Offer;
 import com.applefish.smartshop.classes.Store;
 
@@ -66,7 +71,7 @@ public class OffersActivity extends AppCompatActivity
     public static final String TAG_NUMOFPAGES ="numberOfPages";
     public static final String TAG_SPECIFICATION ="specification";
     public static final String TAG_STORE_IDSTORE="store_idstore";
-//    private static final String OFFERS_URL = "http://192.168.1.2/smartshop/idid.php";
+    //    private static final String OFFERS_URL = "http://192.168.1.2/smartshop/idid.php";
     private static final String OFFERS_URL ="http://smartshop-uae.org/smartshop/idid.php";
     private static ArrayList<Offer> offersList;
     private static ArrayList<ImageButton> offersCoversList;
@@ -96,8 +101,8 @@ public class OffersActivity extends AppCompatActivity
         Bundle bundle = getIntent().getExtras();
         String activityName = bundle.getString("ACTIVITY_NAME");
 
-            if(activityName.equalsIgnoreCase("MAIN"))
-                selectedStore = (Store) bundle.get(TAG_NAME);
+        if(activityName.equalsIgnoreCase("MAIN"))
+            selectedStore = (Store) bundle.get(TAG_NAME);
 //-----------------------------------------------------------
         ImageView logo = (ImageView)findViewById(R.id.storelogo);
         logo.setImageBitmap(selectedStore.getLogo());
@@ -108,14 +113,20 @@ public class OffersActivity extends AppCompatActivity
         offersList = new ArrayList<>();
         offersCoversList = new ArrayList<>();
 
+        if (ConnectChecked.isNetworkAvailable(getBaseContext()) &&
+                ConnectChecked.isOnline()) {
         Thread getData = new Thread(){
             @Override
             public void run() {
                 super.run();
-                getJSON( OFFERS_URL );            }
+                getJSON( OFFERS_URL ,true);            }
         };
 
         getData.start();
+        } else {
+            Snackbar.make(toolbar, "No Internet Connection", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        }
 
         int permissionCheckWriteExternalStorage = ContextCompat.checkSelfPermission(
                 OffersActivity.this,
@@ -141,6 +152,11 @@ public class OffersActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
+            //Stop Task
+            getJSON( OFFERS_URL ,false);
+            getImage(0,"",false);
+            offersList = new ArrayList<>();
+            offersCoversList = new ArrayList<>();
             super.onBackPressed();
         }
 
@@ -181,7 +197,7 @@ public class OffersActivity extends AppCompatActivity
     }
 
 
-    private void getJSON(String url) {
+    private void getJSON(String url,boolean ckeck) {
 
         int storeID = selectedStore.getId();
 
@@ -221,9 +237,21 @@ public class OffersActivity extends AppCompatActivity
                 buildOffersList();
 
             }
+
+            public void canceltask(GetJSON getJSON)
+            {getJSON.cancel(true);}
         }
         GetJSON gj = new GetJSON();
-        gj.execute(url+"/?store_idstore="+storeID);
+        if(ckeck)
+        {
+            gj.execute(url+"/?store_idstore="+storeID);
+        }
+        else
+        {
+            if(!gj.isCancelled())
+                gj.cancel(true);
+        }
+
     }
 
 
@@ -237,27 +265,27 @@ public class OffersActivity extends AppCompatActivity
                 JSONObject jsonObj = new JSONObject(jsonResult);
 
                 if( !jsonResult.toString().equals("{\"result\":\"NoOffers\"}")) {
-                offersArray = jsonObj.getJSONArray(TAG_RESULTS);
+                    offersArray = jsonObj.getJSONArray(TAG_RESULTS);
 
 
-                for (int i = 0; i < offersArray.length(); i++) {
+                    for (int i = 0; i < offersArray.length(); i++) {
 
-                    JSONObject c = offersArray.getJSONObject(i);
+                        JSONObject c = offersArray.getJSONObject(i);
 
-                    int id = Integer.parseInt(c.getString(TAG_ID));
-                    String title = c.getString(TAG_TITLE);
-                    String date = c.getString(TAG_DATE);
-                    int numberOfViews = Integer.parseInt(c.getString(TAG_NUM_OF_VIEWS));
-                    String PdfUrl = c.getString(TAG_PDFURL);
-                    String coverUrl = c.getString(TAG_COVERURL);
-                    int numberOfPages = Integer.parseInt(c.getString(TAG_NUMOFPAGES));
-                    String specification = c.getString(TAG_SPECIFICATION);
-                    int store_idstore = Integer.parseInt(c.getString(TAG_STORE_IDSTORE));
+                        int id = Integer.parseInt(c.getString(TAG_ID));
+                        String title = c.getString(TAG_TITLE);
+                        String date = c.getString(TAG_DATE);
+                        int numberOfViews = Integer.parseInt(c.getString(TAG_NUM_OF_VIEWS));
+                        String PdfUrl = c.getString(TAG_PDFURL);
+                        String coverUrl = c.getString(TAG_COVERURL);
+                        int numberOfPages = Integer.parseInt(c.getString(TAG_NUMOFPAGES));
+                        String specification = c.getString(TAG_SPECIFICATION);
+                        int store_idstore = Integer.parseInt(c.getString(TAG_STORE_IDSTORE));
 
-                    Offer offer = new Offer(id, title, date, numberOfViews, PdfUrl, coverUrl, numberOfPages, specification, store_idstore);
-                    offersList.add(offer);
+                        Offer offer = new Offer(id, title, date, numberOfViews, PdfUrl, coverUrl, numberOfPages, specification, store_idstore);
+                        offersList.add(offer);
 
-                }
+                    }
 
 
                     getAllImages();
@@ -267,9 +295,9 @@ public class OffersActivity extends AppCompatActivity
                         final TableLayout mTlayout = (TableLayout)findViewById(R.id.tableoffer);
                         final TableRow[] tr = {new TableRow(this)};
                         if(offersList.size()>0)
-                        this.findViewById(R.id.progressbaroffer).setVisibility(View.GONE);
+                            this.findViewById(R.id.progressbaroffer).setVisibility(View.GONE);
 
-                       offersCoversList.clear();
+                        offersCoversList.clear();
 
                         Thread setupTab = new Thread() {
 
@@ -280,39 +308,41 @@ public class OffersActivity extends AppCompatActivity
 
 
                                 for ( int i=0; i < offersList.size(); i++ ){
+                                    //========================================
 
 
                                     TableLayout.LayoutParams params = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
                                             TableLayout.LayoutParams.MATCH_PARENT );
-                                    params.rightMargin = 5;
-                                    params.leftMargin = 5;
+                                    params.rightMargin = 25;
+                                    params.leftMargin = 25;
                                     params.topMargin = 5;
                                     params.bottomMargin = 5;
+                                    params.gravity= Gravity.CENTER;
                                     tr[0] = new TableRow(getBaseContext());
+                                    tr[0].setGravity(Gravity.CENTER);
                                     tr[0].setLayoutParams(params);
-                                    tr[0].setBackgroundColor(Color.BLACK);
+                                    //   tr[0].setBackgroundColor(Color.BLACK);
                                     mTlayout.addView(tr[0]);
 
                                     //create component
                                     RelativeLayout relativeLayout = new RelativeLayout(getBaseContext());
                                     LinearLayout linearLayout = new LinearLayout(getBaseContext());
                                     linearLayout.setOrientation(LinearLayout.VERTICAL);
-
-//                                    relativeLayout.setBackgroundColor(Color.CYAN);
-//                                    linearLayout.setBackgroundColor(Color.GREEN);
-
+                                    linearLayout.setGravity(Gravity.CENTER);
 
                                     TextView title = new TextView(getBaseContext());
                                     title.setText( offersList.get(i).getTitle() );
-                                    //   title.setBackgroundResource(R.drawable.customborder3);
-                                    title.setTextSize(15);
-                                    title.setTextColor(Color.GRAY);
-
+                                    // title.setBackgroundResource(R.drawable.customborder4);
+                                    title.setTextSize(16);
+                                    title.setTextColor(Color.rgb(24, 155, 226));
+                                    title.setTypeface(null, Typeface.BOLD);
+                                    title.setGravity(Gravity.CENTER);
                                     TextView date = new TextView(getBaseContext());
-                                    date.setText( offersList.get(i).getDate() );
+                                    date.setText( "Added Date "+offersList.get(i).getDate() );
                                     //    date.setBackgroundResource(R.drawable.customborder3);
                                     date.setTextSize(15);
-                                    date.setTextColor(Color.GRAY);
+                                    date.setTextColor(Color.RED);
+                                    date.setGravity(Gravity.CENTER);
                                     date.setTypeface(null, Typeface.BOLD);
 
                                     TextView numOfPages = new TextView(getBaseContext());
@@ -320,42 +350,55 @@ public class OffersActivity extends AppCompatActivity
                                     numOfPages.setBackgroundResource(R.drawable.customborder3);
                                     numOfPages.setTextSize(14);
                                     numOfPages.setTextColor(Color.WHITE);
+                                    numOfPages.setGravity(Gravity.CENTER);
                                     numOfPages.setTypeface(null, Typeface.BOLD);
 
 
                                     final ImageButton offerCover = new ImageButton(getBaseContext());
 
                                     // TableRow  Params  apply on child (RelativeLayout)
-                                    TableRow.LayoutParams rlp = new TableRow.LayoutParams(200,
-                                            260,40 );
+                                    TableRow.LayoutParams rlp = new TableRow.LayoutParams(0,
+                                            350
+                                            ,40 );
 
-                                    TableRow.LayoutParams rlp2 = new TableRow.LayoutParams(400,
-                                            260 ,60);
-                                    // LinearLayout  Params  apply on child (textView Number of pages)
+                                    TableRow.LayoutParams rlp2 = new TableRow.LayoutParams(0,
+                                            350
+                                            ,60);
+                                    rlp2.gravity=Gravity.CENTER;
+
+
+                                    // LinearLayout  Params  appl
+                                    // y on child (textView Number of pages)
                                     final LinearLayout.LayoutParams rlp3 = new LinearLayout.LayoutParams(
                                             LinearLayout.LayoutParams.WRAP_CONTENT,
-                                            LinearLayout.LayoutParams.WRAP_CONTENT
+                                            0,
+                                            23
                                     );
-                                    //rlp3.weight=1;
+                                    rlp3.gravity= Gravity.CENTER;
+
                                     // rlp3.rightMargin=10;
-                                    rlp3.leftMargin=100;
+                                    // rlp3.leftMargin=100;
                                     // rlp3.bottomMargin=27;
-                                    rlp3.topMargin=3;
+                                    //rlp3.topMargin=3;
                                     // LinearLayout  Params  apply on child (textView Date)
                                     final LinearLayout.LayoutParams rlp4= new LinearLayout.LayoutParams(
-                                            LinearLayout.LayoutParams.MATCH_PARENT,
-                                            LinearLayout.LayoutParams.WRAP_CONTENT
+                                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                                            0,
+                                            23
                                     );
-                                    // rlp4.weight=1;
-                                    rlp4.leftMargin=30;
-                                    rlp4.topMargin=10;
+                                    rlp4.gravity= Gravity.CENTER;
+                                    rlp4.leftMargin=2;
+                                    //rlp4.topMargin=10;
                                     // LinearLayout  Params  apply on child (textView Title)
                                     final LinearLayout.LayoutParams rlp5 = new LinearLayout.LayoutParams(
                                             LinearLayout.LayoutParams.MATCH_PARENT,
-                                            LinearLayout.LayoutParams.WRAP_CONTENT
+                                            0,
+                                            56
                                     );
-                                    //    rlp5.weight=1;
-                                    rlp5.leftMargin=20;
+                                    rlp5.gravity=Gravity.CENTER;
+                                    // rlp5.gravity=Gravity.CENTER_HORIZONTAL;
+
+                                    // rlp5.leftMargin=20;
                                     // rlp.gravity= Gravity.CENTER;
                                     //  rlp5.bottomMargin=20;
 
@@ -378,45 +421,34 @@ public class OffersActivity extends AppCompatActivity
 
                                     tr[0].setBackgroundResource(R.drawable.mybutton_background);
                                     tr[0].setAddStatesFromChildren(true); // <<<<  this line is the best in the world
+                                    relativeLayout.setAddStatesFromChildren(true);
+                                    //  offerCover.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
-                                    offerCover.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                                    offerCover.setBackgroundResource(R.drawable.spin_animation);
 
-                                    runOnUiThread(new Runnable() {
-                                        @Override
+
+                                    final Handler handler = new Handler(Looper.getMainLooper());
+                                    handler.postDelayed(new Runnable() {
                                         public void run() {
+                                            offerCover.setBackgroundResource(R.drawable.spin_animation);
                                             // Get the background, which has been compiled to an AnimationDrawable object.
                                             AnimationDrawable frameAnimation = (AnimationDrawable) offerCover.getBackground();
 
                                             // Start the animation (looped playback by default).
                                             frameAnimation.start();
-                                        }});
+                                        }
+                                    }, 200);
 
-                                    tr[0].setId( 1100+i) ;
 
-                                    LinearLayout l1=new LinearLayout(getBaseContext());
-                                    l1.setOrientation(LinearLayout.HORIZONTAL);
-//l1.setBackgroundColor(Color.RED);
-                                    View v1=new View(getBaseContext());
 
-                                    l1.addView(numOfPages);
-                                    l1.addView(v1);
+                                    tr[0].setId( 1200+i) ;
+                                    offerCover.setId( 2200+i) ;
 
-                                    LinearLayout l2=new LinearLayout(getBaseContext());
-                                    l2.setOrientation(LinearLayout.HORIZONTAL);
-                                    l2.addView(title);
-//l2.setBackgroundColor(Color.GREEN);
-                                    LinearLayout l3=new LinearLayout(getBaseContext());
-                                    l3.setOrientation(LinearLayout.HORIZONTAL);
-                                    View v3=new View(getBaseContext());
-                                    l3.addView(date);
-                                    l3.addView(v3);
-//l3.setBackgroundColor(Color.YELLOW);
+
                                     //add  View
                                     relativeLayout.addView(offerCover);
-                                    linearLayout.addView(l1,270,75);
-                                    linearLayout.addView(l2,  LinearLayout.LayoutParams.WRAP_CONTENT,  100);
-                                    linearLayout.addView(l3,230,75);
+                                    linearLayout.addView(numOfPages);
+                                    linearLayout.addView(title);
+                                    linearLayout.addView(date);
 
 
                                     tr[0].addView(relativeLayout);
@@ -430,9 +462,10 @@ public class OffersActivity extends AppCompatActivity
 
                                             Intent pdfViewer = new Intent( );
                                             int tableRowId = v.getId();
-                                            String pdfUrl = offersList.get(tableRowId-1100).getPDF_URL();
-                                            int idoffer=offersList.get(tableRowId-1100).getId();
-                                            Toast.makeText(getBaseContext(),pdfUrl,Toast.LENGTH_SHORT).show();
+                                            String pdfUrl = offersList.get(tableRowId-1200).getPDF_URL();
+                                            int idoffer = offersList.get(tableRowId-1200).getId();
+                                           // Toast.makeText(getBaseContext(),pdfUrl,Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(getBaseContext(),"Please,wait.....",Toast.LENGTH_SHORT).show();
                                             Log.i("getAllImages", "setOnClickListener: " +pdfUrl);
                                             pdfViewer.putExtra(Key,pdfUrl);
                                             pdfViewer.putExtra(Key2,idoffer);
@@ -442,6 +475,26 @@ public class OffersActivity extends AppCompatActivity
                                         }
                                     });
 
+                                    offerCover.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+
+                                            Intent pdfViewer = new Intent( );
+                                            int Cover = v.getId();
+                                            String pdfUrl = offersList.get(Cover-2200).getPDF_URL();
+                                            int idoffer = offersList.get(Cover-2200).getId();
+                                         //   Toast.makeText(getBaseContext(),pdfUrl,Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(getBaseContext(),"Please,wait.....",Toast.LENGTH_SHORT).show();
+                                            Log.i("getAllImages", "setOnClickListener: " +pdfUrl);
+                                            pdfViewer.putExtra(Key,pdfUrl);
+                                            pdfViewer.putExtra(Key2,idoffer);
+                                            pdfViewer.setClass( getBaseContext(), PdfViewerActivity.class );
+                                            startActivity( pdfViewer);
+
+                                        }
+                                    });
+
+                                    //=====================================
 
                                 }
 
@@ -460,10 +513,10 @@ public class OffersActivity extends AppCompatActivity
 
                     }
 
-            }
-            else {
-                Toast.makeText(getBaseContext(), "NO offers", Toast.LENGTH_SHORT).show();
-            }
+                }
+                else {
+                    Toast.makeText(getBaseContext(), "NO offers", Toast.LENGTH_SHORT).show();
+                }
             }
             else {
                 Toast.makeText(getBaseContext(), "NO thing in DB", Toast.LENGTH_LONG).show();
@@ -486,7 +539,7 @@ public class OffersActivity extends AppCompatActivity
                 super.run();
                 for (int i = 0; i < offersList.size(); i++) {
                     final Offer offer = offersList.get(i);
-                    getImage(i, offer.getCoverURL());
+                    getImage(i, offer.getCoverURL(),true);
                 }
             }
         };
@@ -500,7 +553,7 @@ public class OffersActivity extends AppCompatActivity
 
     }
 
-    private static void getImage(final int id, String urlToImage){
+    private static void getImage(final int id, String urlToImage,boolean ckeck){
 
         class GetImage extends AsyncTask<String,Void,Bitmap> {
 
@@ -540,31 +593,36 @@ public class OffersActivity extends AppCompatActivity
                 super.onPostExecute(bitmap);
 
                 // id-1 because of id starts from 1
-                Offer offer = offersList.get( id );
-                offer.setCover(bitmap);
-                OffersActivity.setImageBitmap(id);
+                if(offersList.size()!=0 && offersList.size() > id){
+                    Offer offer = offersList.get( id );
+                    Log.i("getImage onPostExecute", "id : " +id);
+                    offer.setCover(bitmap);
+                    OffersActivity.setImageBitmap(id);}
             }
         }
-
         GetImage gi = new GetImage();
-        gi.execute(urlToImage);
+        if(ckeck)
+            gi.execute(urlToImage);
+        else
+        if (gi.isCancelled())
+            gi.cancel(true);
     }
 
     private static void setImageBitmap( int index ){
 
         // RelativeLayout  Params  apply on child (imageButton ) when on click
         final RelativeLayout.LayoutParams rlp4 = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.WRAP_CONTENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT
+                RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.MATCH_PARENT
         );
         rlp4.addRule(RelativeLayout.CENTER_HORIZONTAL);
         rlp4.addRule(RelativeLayout.CENTER_VERTICAL);
 
 
-            ImageButton offerCover = offersCoversList.get(index);
-            offerCover.setBackgroundResource(0);
-            offerCover.setLayoutParams(rlp4);
-            offerCover.setImageBitmap(offersList.get(index).getCover());
+        ImageButton offerCover = offersCoversList.get(index);
+        offerCover.setLayoutParams(rlp4);
+        offerCover.setBackgroundResource(R.drawable.customborder);
+        offerCover.setImageBitmap(offersList.get(index).getCover());
 
 
 

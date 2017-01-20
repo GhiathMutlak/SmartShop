@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
@@ -37,9 +38,9 @@ import static com.applefish.smartshop.fcm.EndPoints.URL_UNREGISTER_DEVICE;
 
 public class SettingActivity extends AppCompatActivity {
     //defining views
-   // private Button buttonRegister;
-   // private EditText editTextEmail;
-    private Switch  switchNotification;
+    // private Button buttonRegister;
+    // private EditText editTextEmail;
+    private SwitchCompat switchNotification;
     private ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,12 +58,12 @@ public class SettingActivity extends AppCompatActivity {
 //            }
 //        });
 
-       // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
         //getting views from xml
-       // editTextEmail = (EditText) findViewById(R.id.editTextEmail);
-        switchNotification=(Switch) findViewById(R.id.switch1);
+        // editTextEmail = (EditText) findViewById(R.id.editTextEmail);
+        switchNotification=(SwitchCompat) findViewById(R.id.switch1);
         //buttonRegister = (Button) findViewById(R.id.buttonRegister);
 
         String favoriteOffer=readSharedPreference();
@@ -75,23 +76,23 @@ public class SettingActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
                 String favoriteOffer=readSharedPreference();
-                 if(switchNotification.isChecked())
+                if(switchNotification.isChecked())
                 {
-                     if(ConnectChecked.isNetworkAvailable(getBaseContext())&& ConnectChecked.isOnline())
-                     {
-                             if(favoriteOffer.equals("") || favoriteOffer.equals("off"))
+                    if(ConnectChecked.isNetworkAvailable(getBaseContext())&& ConnectChecked.isOnline())
+                    {
+                        if(favoriteOffer.equals("") || favoriteOffer.equals("off"))
                         {
                             sendTokenToServer();
                             writeSharedPreference("on");
                             //Toast.makeText(getBaseContext(), "Switch on", Toast.LENGTH_LONG).show();
                         }
-                     }
+                    }
                     else
-                     {
-                         switchNotification.setChecked(false);
-                         Snackbar.make(buttonView, "No Internet Connection", Snackbar.LENGTH_LONG)
-                                 .setAction("Action", null).show();
-                     }
+                    {
+                        switchNotification.setChecked(false);
+                        Snackbar.make(buttonView, "No Internet Connection", Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+                    }
 
                 }
                 else
@@ -100,9 +101,9 @@ public class SettingActivity extends AppCompatActivity {
                     {
                         if(favoriteOffer.equals("on"))
                         {
-                           deleteTokenToServer();
+                            deleteTokenToServer();
                             writeSharedPreference("off");
-                          //  Toast.makeText(getBaseContext(), "Switch off", Toast.LENGTH_LONG).show();
+                            //  Toast.makeText(getBaseContext(), "Switch off", Toast.LENGTH_LONG).show();
                         }
                     }
                     else
@@ -125,7 +126,7 @@ public class SettingActivity extends AppCompatActivity {
     //storing token to mysql server
     private void sendTokenToServer() {
         progressDialog = new ProgressDialog(this);
-       // progressDialog.setMessage("Registering Device...");
+        // progressDialog.setMessage("Registering Device...");
         progressDialog.setMessage("Notification  Switch...");
         progressDialog.show();
 

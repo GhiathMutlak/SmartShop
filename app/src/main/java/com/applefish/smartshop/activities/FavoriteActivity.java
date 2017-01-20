@@ -15,6 +15,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GestureDetectorCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -32,6 +35,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.applefish.smartshop.R;
+import com.applefish.smartshop.classes.ConnectChecked;
 import com.applefish.smartshop.classes.Offer;
 import com.applefish.smartshop.classes.Store;
 
@@ -72,6 +76,7 @@ public class FavoriteActivity extends AppCompatActivity {
     final static String Key2 = "com.applefish.smartshop.IDOffer";
 
     private ScrollView scrollView;
+    private ImageView imageView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,9 +94,10 @@ public class FavoriteActivity extends AppCompatActivity {
                 setContentView(R.layout.activity_favorite);
                 Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
                 setSupportActionBar(toolbar);
-                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 scrollView=(ScrollView)findViewById(R.id.Scroll_fav_offer) ;
-                scrollView.setBackgroundResource(R.drawable.cry_star);
+                imageView= (ImageView) findViewById(R.id.image_cry_star);
+                imageView.setBackgroundResource(R.drawable.cry_star);
 
                 final Handler handler = new Handler(Looper.getMainLooper());
                 handler.postDelayed(new Runnable() {
@@ -113,22 +119,28 @@ public class FavoriteActivity extends AppCompatActivity {
         String [] offersId=favoriteOffers.split(",");
         if( offersId.length ==1 &&  offersId[0].equals(""))
         {
-           scrollView.setBackgroundResource(R.drawable.cry_star);
+           //scrollView.setBackgroundResource(R.drawable.cry_star);
+            imageView= (ImageView) findViewById(R.id.image_cry_star);
+            imageView.setBackgroundResource(R.drawable.cry_star);
             Log.i("scrollView", "scrollView" );
         }
-        else
-        {
-            Thread getOfferData = new Thread(){
-                @Override
-                public void run() {
-                    super.run();
-                    getJSON( FAV_OFFERS_URL );
-                }
-            };
+        else {
+            if (ConnectChecked.isNetworkAvailable(getBaseContext()))
+                              {
+                Thread getOfferData = new Thread() {
+                    @Override
+                    public void run() {
+                        super.run();
+                        getJSON(FAV_OFFERS_URL,true);
+                    }
+                };
 
-            getOfferData.start();
+                getOfferData.start();
+            } else {
+                Snackbar.make(toolbar, "No Internet Connection", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
         }
-
 
         int permissionCheckWriteExternalStorage = ContextCompat.checkSelfPermission(
                 FavoriteActivity.this,
@@ -146,7 +158,7 @@ public class FavoriteActivity extends AppCompatActivity {
         }
 
     }
-    private void getJSON(String url) {
+    private void getJSON(String url,boolean check) {
 
 
         class GetJSON extends AsyncTask<String, Void, String> {
@@ -187,7 +199,14 @@ public class FavoriteActivity extends AppCompatActivity {
             }
         }
         GetJSON gj = new GetJSON();
-        gj.execute(url+"/?Fav_offers="+readSharedPreference());
+        if(check)
+         gj.execute(url+"/?Fav_offers="+readSharedPreference());
+        else
+        {
+            if(!gj.isCancelled())
+            gj.cancel(true);
+        }
+
     }
 
     public void buidlOffersList() {
@@ -245,83 +264,78 @@ public class FavoriteActivity extends AppCompatActivity {
                                             params.bottomMargin = 5;
                                             tr[0] = new TableRow(getBaseContext());
                                             tr[0].setLayoutParams(params);
-                                            tr[0].setBackgroundColor(Color.BLACK);
+                                       //    tr[0].setBackgroundColor(Color.BLACK);
+                                            tr[0].setGravity(Gravity.CENTER);
+
                                             mTlayout.addView(tr[0]);
 
                                             //create component
                                           //  RelativeLayout relativeLayout = new RelativeLayout(getBaseContext());
                                             LinearLayout linearLayout = new LinearLayout(getBaseContext());
                                             linearLayout.setOrientation(LinearLayout.VERTICAL);
-
-//                                    relativeLayout.setBackgroundColor(Color.CYAN);
-//                                    linearLayout.setBackgroundColor(Color.GREEN);
+                                            linearLayout.setGravity(Gravity.CENTER);
+                                  // linearLayout.setBackgroundColor(Color.GREEN);
 
 
                                             TextView title = new TextView(getBaseContext());
                                             title.setText( offersList.get(i).getTitle() );
-                                            //   title.setBackgroundResource(R.drawable.customborder3);
+                                           // title.setBackgroundResource(R.drawable.customborder3);
                                             title.setTextSize(15);
-                                            title.setTextColor(Color.GRAY);
+                                            title.setGravity(Gravity.CENTER);
+                                            title.setTextColor(Color.rgb(24, 155, 226));
+                                            title.setTypeface(null, Typeface.BOLD);
 
                                             TextView date = new TextView(getBaseContext());
                                             date.setText( "Added Date "+offersList.get(i).getDate() );
                                             date.setBackgroundResource(R.drawable.customborder4);
                                             date.setTextSize(15);
+                                            date.setGravity(Gravity.CENTER);
                                             date.setTextColor(Color.WHITE);
                                             date.setTypeface(null, Typeface.BOLD);
 
                                             TextView numOfPages = new TextView(getBaseContext());
                                             numOfPages.setText( "    Pages="+offersList.get(i).getNumberOfPages() );
-                                            numOfPages.setBackgroundResource(R.drawable.customborder3);
+                                            numOfPages.setBackgroundResource(R.drawable.customborder7);
                                             numOfPages.setTextSize(14);
+                                            numOfPages.setGravity(Gravity.CENTER);
                                             numOfPages.setTextColor(Color.WHITE);
                                             numOfPages.setTypeface(null, Typeface.BOLD);
 
 
                                           //  final ImageButton offerCover = new ImageButton(getBaseContext());
 
-//                                            // TableRow  Params  apply on child (RelativeLayout)
-//                                            TableRow.LayoutParams rlp = new TableRow.LayoutParams(200,
-//                                                    260,40 );
-
-                                            TableRow.LayoutParams rlp2 = new TableRow.LayoutParams(0,
-                                                    TableLayout.LayoutParams.MATCH_PARENT ,1);
+                                            LinearLayout.LayoutParams rlp2 = new LinearLayout.LayoutParams( LinearLayout.LayoutParams.WRAP_CONTENT,
+                                                    LinearLayout.LayoutParams.MATCH_PARENT ,65);
                                             // LinearLayout  Params  apply on child (textView Number of pages)
                                             final LinearLayout.LayoutParams rlp3 = new LinearLayout.LayoutParams(
                                                     LinearLayout.LayoutParams.WRAP_CONTENT,
                                                     LinearLayout.LayoutParams.MATCH_PARENT
+                                                    ,35
                                             );
-                                         rlp3.weight=1;
-                                            rlp3.gravity=Gravity.CENTER_HORIZONTAL;
-                                            // rlp3.rightMargin=10;
-                                          //  rlp3.leftMargin=100;
-                                            // rlp3.bottomMargin=27;
-                                            //rlp3.topMargin=3;
                                             // LinearLayout  Params  apply on child (textView Date)
-                                            final LinearLayout.LayoutParams rlp4= new LinearLayout.LayoutParams(
-                                                    LinearLayout.LayoutParams.MATCH_PARENT,
-                                                    100
-                                            );
-                                            rlp4.weight=1;
-                                            rlp4.gravity=Gravity.CENTER;
-                                          //  rlp4.leftMargin=30;
-                                          //  rlp4.topMargin=10;
-                                            // LinearLayout  Params  apply on child (textView Title)
+                                            final LinearLayout.LayoutParams rlp4= new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT
+                                                    ,LinearLayout.LayoutParams.WRAP_CONTENT         );
+
+                                           //  LinearLayout  Params  apply on  (textView Title)
                                             final LinearLayout.LayoutParams rlp5 = new LinearLayout.LayoutParams(
                                                     LinearLayout.LayoutParams.MATCH_PARENT,
-                                                    75
+                                                    LinearLayout.LayoutParams.WRAP_CONTENT,1
                                             );
-                                               rlp5.weight=1;
-                                            rlp5.gravity=Gravity.CENTER;
 
+
+                                            final TableRow.LayoutParams rlp6 = new TableRow.LayoutParams(
+                                                    TableRow.LayoutParams.MATCH_PARENT,
+                                                    TableRow.LayoutParams.MATCH_PARENT
+                                                    ,1
+                                            );
+                                            rlp6.gravity= Gravity.CENTER;
 
                                             //set layout params
-                                           // relativeLayout.setLayoutParams(rlp);
-                                         linearLayout.setLayoutParams(rlp2);
+                                        linearLayout.setLayoutParams(rlp6);
                                            // offerCover.setLayoutParams(rlp6);
-                                            numOfPages.setLayoutParams(rlp3);
-                                           date.setLayoutParams(rlp3);
-                                           title.setLayoutParams(rlp3);
+                                            date.setLayoutParams(rlp2);
+                                           numOfPages.setLayoutParams(rlp3);
+                                          title.setLayoutParams(rlp5);
 
                                             tr[0].setBackgroundResource(R.drawable.mybutton_background);
                                             tr[0].setAddStatesFromChildren(true); // <<<<  this line is the best in the world
@@ -329,27 +343,15 @@ public class FavoriteActivity extends AppCompatActivity {
 
                                             tr[0].setId( 1100+i) ;
 
-                                            LinearLayout l1=new LinearLayout(getBaseContext());
-                                            l1.setGravity(Gravity.CENTER_HORIZONTAL);
-                                            l1.setOrientation(LinearLayout.HORIZONTAL);
-                                            l1.setLayoutParams(rlp5);
-                                            //View v1=new View(getBaseContext());
-
-                                            l1.addView(title);
-                                            //l1.addView(v1);
-
                                             LinearLayout l4=new LinearLayout(getBaseContext());
                                             l4.setOrientation(LinearLayout.HORIZONTAL);
-                                           // View v4=new View(getBaseContext());
-                                            l4.setLayoutParams(rlp5);
+                                           // l4.setBackgroundColor(Color.RED);
+                                            l4.setLayoutParams(rlp4);
                                             l4.addView(date);
                                             l4.addView(numOfPages);
-                                            linearLayout.addView(l1);
+                                           linearLayout.addView(title);
                                             linearLayout.addView(l4);
 
-
-
-                                           // tr[0].addView(relativeLayout);
                                             tr[0].addView(linearLayout);
 
                                             //  offersCoversList.add(offerCover);
@@ -420,6 +422,17 @@ public class FavoriteActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(getString(R.string.saved_favorite), savedFavoriteOffer);
         editor.commit();
+
+    }
+
+    @Override
+    public void onBackPressed() {
+           //Stop Task
+            getJSON( "" ,false);
+           offersList = new ArrayList<>();
+            offersCoversList = new ArrayList<>();
+            super.onBackPressed();
+
 
     }
 
