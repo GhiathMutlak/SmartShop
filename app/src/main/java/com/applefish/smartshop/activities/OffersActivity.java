@@ -346,7 +346,7 @@ public class OffersActivity extends AppCompatActivity
                                     date.setTypeface(null, Typeface.BOLD);
 
                                     TextView numOfPages = new TextView(getBaseContext());
-                                    numOfPages.setText( " Pages="+offersList.get(i).getNumberOfPages() );
+                                    numOfPages.setText( offersList.get(i).getNumberOfPages()+"Pages");
                                     numOfPages.setBackgroundResource(R.drawable.customborder3);
                                     numOfPages.setTextSize(14);
                                     numOfPages.setTextColor(Color.WHITE);
@@ -355,7 +355,8 @@ public class OffersActivity extends AppCompatActivity
 
 
                                     final ImageButton offerCover = new ImageButton(getBaseContext());
-
+                                    offerCover.setAdjustViewBounds(true);
+                                    offerCover.setPadding(20,20,20,20);
                                     // TableRow  Params  apply on child (RelativeLayout)
                                     TableRow.LayoutParams rlp = new TableRow.LayoutParams(0,
                                             350

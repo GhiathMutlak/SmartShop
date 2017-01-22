@@ -774,7 +774,7 @@ public class MainActivity extends AppCompatActivity
 
         if ( list.equals("latest")) {
             ImageButton cover = latestOffersCoversList.get(index);
-            // cover.setBackgroundResource(0);
+            cover.setBackgroundResource(0);
             cover.setLayoutParams(rlp4);
             cover.setBackgroundResource(R.drawable.customborder);
             cover.setImageBitmap(latestOffersList.get(index).getCover());
@@ -782,7 +782,7 @@ public class MainActivity extends AppCompatActivity
         } else
         if ( list.equals("mostViewed") ) {
             ImageButton cover = mostViewedCoversList.get(index);
-            // cover.setBackgroundResource(0);
+          cover.setBackgroundResource(0);
             cover.setLayoutParams(rlp4);
             cover.setBackgroundResource(R.drawable.customborder);
             cover.setImageBitmap(mostViewedList.get(index).getCover());

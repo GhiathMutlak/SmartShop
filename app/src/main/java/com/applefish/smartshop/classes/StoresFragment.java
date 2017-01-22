@@ -117,7 +117,8 @@ public class StoresFragment extends Fragment {
             linearLayout1.setAddStatesFromChildren(true); // <<<<  this line is the best in the world
 
             storeLogo.setScaleType(ImageView.ScaleType.FIT_CENTER);
-
+            storeLogo.setAdjustViewBounds(true);
+            storeLogo.setPadding(20,20,20,20);
 
             final Handler handler = new Handler(Looper.getMainLooper());
             handler.postDelayed(new Runnable() {
