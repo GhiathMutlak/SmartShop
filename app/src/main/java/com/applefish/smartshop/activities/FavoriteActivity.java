@@ -115,6 +115,7 @@ public class FavoriteActivity extends AppCompatActivity {
 
         scrollView=(ScrollView)findViewById(R.id.Scroll_fav_offer) ;
         offersList = new ArrayList<>();
+
         String favoriteOffers=readSharedPreference();
         String [] offersId=favoriteOffers.split(",");
         if( offersId.length ==1 &&  offersId[0].equals(""))

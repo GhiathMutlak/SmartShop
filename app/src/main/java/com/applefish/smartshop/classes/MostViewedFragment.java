@@ -116,7 +116,7 @@ public class MostViewedFragment extends Fragment {
                     date.setTypeface(null, Typeface.BOLD);
 
                     TextView numOfPages = new TextView(getContext());
-                    numOfPages.setText( " Pages="+MainActivity.mostViewedList.get(i).getNumberOfPages() );
+                    numOfPages.setText( MainActivity.mostViewedList.get(i).getNumberOfPages()+"Pages" );
                     numOfPages.setBackgroundResource(R.drawable.customborder3);
                     numOfPages.setTextSize(14);
                     numOfPages.setTextColor(Color.WHITE);
@@ -125,7 +125,8 @@ public class MostViewedFragment extends Fragment {
 
 
                     final ImageButton offerCover = new ImageButton(getContext());
-
+                    offerCover.setAdjustViewBounds(true);
+                    offerCover.setPadding(20,20,20,20);
                     // TableRow  Params  apply on child (RelativeLayout)
                     TableRow.LayoutParams rlp = new TableRow.LayoutParams(0,
                             350
@@ -142,7 +143,7 @@ public class MostViewedFragment extends Fragment {
                     final LinearLayout.LayoutParams rlp3 = new LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.WRAP_CONTENT,
                             0,
-                            23
+                            25
                     );
                     rlp3.gravity= Gravity.CENTER;
 
@@ -154,7 +155,7 @@ public class MostViewedFragment extends Fragment {
                     final LinearLayout.LayoutParams rlp4= new LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.WRAP_CONTENT,
                             0,
-                            23
+                            25
                     );
                     rlp4.gravity= Gravity.CENTER;
                     rlp4.leftMargin=2;
@@ -163,7 +164,7 @@ public class MostViewedFragment extends Fragment {
                     final LinearLayout.LayoutParams rlp5 = new LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.MATCH_PARENT,
                             0,
-                            56
+                            50
                     );
                     rlp5.gravity=Gravity.CENTER;
                     // rlp5.gravity=Gravity.CENTER_HORIZONTAL;
@@ -206,7 +207,7 @@ public class MostViewedFragment extends Fragment {
                             // Start the animation (looped playback by default).
                             frameAnimation.start();
                         }
-                    }, 200);
+                    }, 100);
 
 
 

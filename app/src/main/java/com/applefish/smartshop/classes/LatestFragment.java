@@ -98,6 +98,7 @@ public class LatestFragment extends Fragment {
 
                     //create component
                     RelativeLayout relativeLayout = new RelativeLayout(getContext());
+                    relativeLayout.setGravity(Gravity.CENTER);
                     LinearLayout linearLayout = new LinearLayout(getContext());
                     linearLayout.setOrientation(LinearLayout.VERTICAL);
                     linearLayout.setGravity(Gravity.CENTER);
@@ -118,7 +119,7 @@ public class LatestFragment extends Fragment {
                     date.setTypeface(null, Typeface.BOLD);
 
                     TextView numOfPages = new TextView(getContext());
-                    numOfPages.setText( " Pages="+MainActivity.latestOffersList.get(i).getNumberOfPages() );
+                    numOfPages.setText( MainActivity.latestOffersList.get(i).getNumberOfPages()+"Pages" );
                     numOfPages.setBackgroundResource(R.drawable.customborder3);
                     numOfPages.setTextSize(14);
                     numOfPages.setTextColor(Color.WHITE);
@@ -127,10 +128,11 @@ public class LatestFragment extends Fragment {
 
 
                     final ImageButton offerCover = new ImageButton(getContext());
-
+                    offerCover.setAdjustViewBounds(true);
+                    offerCover.setPadding(20,20,20,20);
                     // TableRow  Params  apply on child (RelativeLayout)
                     TableRow.LayoutParams rlp = new TableRow.LayoutParams(0,
-                            350
+                          350
                             ,40 );
 
                     TableRow.LayoutParams rlp2 = new TableRow.LayoutParams(0,
@@ -144,7 +146,7 @@ public class LatestFragment extends Fragment {
                     final LinearLayout.LayoutParams rlp3 = new LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.WRAP_CONTENT,
                             0,
-                            23
+                            25
                     );
                     rlp3.gravity= Gravity.CENTER;
 
@@ -156,7 +158,7 @@ public class LatestFragment extends Fragment {
                     final LinearLayout.LayoutParams rlp4= new LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.WRAP_CONTENT,
                             0,
-                            23
+                            25
                     );
                     rlp4.gravity= Gravity.CENTER;
                     rlp4.leftMargin=2;
@@ -165,7 +167,7 @@ public class LatestFragment extends Fragment {
                     final LinearLayout.LayoutParams rlp5 = new LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.MATCH_PARENT,
                             0,
-                            56
+                            50
                     );
                     rlp5.gravity=Gravity.CENTER;
                     // rlp5.gravity=Gravity.CENTER_HORIZONTAL;
@@ -194,6 +196,7 @@ public class LatestFragment extends Fragment {
                     tr[0].setBackgroundResource(R.drawable.mybutton_background);
                     tr[0].setAddStatesFromChildren(true); // <<<<  this line is the best in the world
                     relativeLayout.setAddStatesFromChildren(true);
+
                     //  offerCover.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
 
@@ -208,7 +211,7 @@ public class LatestFragment extends Fragment {
                             // Start the animation (looped playback by default).
                             frameAnimation.start();
                         }
-                    }, 200);
+                    }, 100);
 
 
 
