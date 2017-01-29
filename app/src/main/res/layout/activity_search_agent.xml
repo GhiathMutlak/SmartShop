@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.applefish.smartshop.activities.SearchActivity">
+    tools:context="com.applefish.smartshop.activities.SearchAgent">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -13,25 +13,22 @@
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/search_toolbar"
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/white"
-            app:popupTheme="@style/AppTheme.PopupOverlay" >
-            <TextView
-                android:id="@+id/test"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:textColor="#000000"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:gravity="center"
-                android:layout_centerHorizontal="true"/>
-        </android.support.v7.widget.Toolbar>
+            android:background="@color/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_search" />
+    <include layout="@layout/content_search_agent" />
 
+    <!--<android.support.design.widget.FloatingActionButton-->
+        <!--android:id="@+id/fab"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="bottom|end"-->
+        <!--android:layout_margin="@dimen/fab_margin"-->
+        <!--app:srcCompat="@android:drawable/ic_dialog_email" />-->
 
 </android.support.design.widget.CoordinatorLayout>
-

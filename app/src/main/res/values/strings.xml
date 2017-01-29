@@ -36,6 +36,26 @@
     <string name="help5">Thank you for using our app </string>
     <string name="help6">supp.smartshop@gmail.com</string>
 
-    <string name="saved_setting">saved setting</string>
+    <string name="saved_setting_push">saved setting push</string>
+    <string name="saved_setting_sound">saved setting sound</string>
+    <string name="saved_setting_vibrate">saved setting vibrate</string>
     <string name="search_hint">Search here</string>
+    <string name="title_activity_search_agent">Search agent</string>
+    <array name="Category">
+        <item>cat1</item>
+        <item>cat2</item>
+    </array>
+    <array name="item1">
+        <item>cat1 item1</item>
+        <item>cat1 item2</item>
+        <item>cat1 item3</item>
+        <item>all</item>
+    </array>
+    <array name="item2">
+        <item>cat2 item1</item>
+        <item>cat2 item2</item>
+        <item>cat2 item3</item>
+        <item>cat2 item4</item>
+        <item>all</item>
+    </array>
 </resources>

@@ -41,6 +41,17 @@ public class SettingActivity extends AppCompatActivity {
     // private Button buttonRegister;
     // private EditText editTextEmail;
     private SwitchCompat switchNotification;
+    private SwitchCompat switchNotification2;
+    private SwitchCompat switchNotification3;
+    //keys
+    private static final String SETTING_KEY_PUSH = "com.applefish.smartshop.SETTING_KEY_PUSH";
+    private static final String SETTING_KEY_SOUND = "com.applefish.smartshop.SETTING_KEY_SOUND";
+    private static final String SETTING_KEY_VIBRATE = "com.applefish.smartshop.SETTING_KEY_VIBRATE";
+    //getString
+    private   String SETTING_PUSH;
+    private   String SETTING_SOUND;
+    private   String SETTING_VIBRATE;
+
     private ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,26 +75,48 @@ public class SettingActivity extends AppCompatActivity {
         //getting views from xml
         // editTextEmail = (EditText) findViewById(R.id.editTextEmail);
         switchNotification=(SwitchCompat) findViewById(R.id.switch1);
+        switchNotification2=(SwitchCompat) findViewById(R.id.switch2);
+        switchNotification3=(SwitchCompat) findViewById(R.id.switch3);
+        SETTING_PUSH=getBaseContext().getString(R.string.saved_setting_push);
+        SETTING_SOUND=getBaseContext().getString(R.string.saved_setting_sound);
+        SETTING_VIBRATE=getBaseContext().getString(R.string.saved_setting_vibrate);
         //buttonRegister = (Button) findViewById(R.id.buttonRegister);
 
-        String favoriteOffer=readSharedPreference();
-        if(favoriteOffer.equals("") || favoriteOffer.equals("off"))
+        String sp_value=readSharedPreference(SETTING_KEY_PUSH,SETTING_PUSH);
+        if(sp_value.equals("") || sp_value.equals("off"))
         { switchNotification.setChecked(false);}
         else
         { switchNotification.setChecked(true);}
 
+        String sp_value_sound=readSharedPreference(SETTING_KEY_SOUND,SETTING_SOUND);
+        if(sp_value_sound.equals("") || sp_value_sound.equals("off"))
+        { switchNotification2.setChecked(false);}
+        else
+        { switchNotification2.setChecked(true);}
+
+        String sp_value_vibrate=readSharedPreference(SETTING_KEY_VIBRATE,SETTING_VIBRATE);
+        if(sp_value_vibrate.equals("") || sp_value_vibrate.equals("off"))
+        { switchNotification3.setChecked(false);}
+        else
+        { switchNotification3.setChecked(true);}
+
+
         switchNotification.setOnCheckedChangeListener( new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
-                String favoriteOffer=readSharedPreference();
+                String sp_value=readSharedPreference(SETTING_KEY_PUSH,SETTING_PUSH);
                 if(switchNotification.isChecked())
                 {
                     if(ConnectChecked.isNetworkAvailable(getBaseContext())&& ConnectChecked.isOnline())
                     {
-                        if(favoriteOffer.equals("") || favoriteOffer.equals("off"))
+                        if(sp_value.equals("") || sp_value.equals("off"))
                         {
                             sendTokenToServer();
-                            writeSharedPreference("on");
+                            writeSharedPreference("on",SETTING_KEY_PUSH,SETTING_PUSH);
+                            switchNotification2.setChecked(true);
+                            writeSharedPreference("on",SETTING_KEY_SOUND,SETTING_SOUND);
+                            switchNotification3.setChecked(true);
+                            writeSharedPreference("on",SETTING_KEY_VIBRATE,SETTING_VIBRATE);
                             //Toast.makeText(getBaseContext(), "Switch on", Toast.LENGTH_LONG).show();
                         }
                     }
@@ -99,10 +132,16 @@ public class SettingActivity extends AppCompatActivity {
                 {
                     if(ConnectChecked.isNetworkAvailable(getBaseContext())&& ConnectChecked.isOnline())
                     {
-                        if(favoriteOffer.equals("on"))
+                        if(sp_value.equals("on"))
                         {
                             deleteTokenToServer();
-                            writeSharedPreference("off");
+                            writeSharedPreference("off",SETTING_KEY_PUSH,SETTING_PUSH);
+
+                            switchNotification2.setChecked(false);
+                            writeSharedPreference("off",SETTING_KEY_SOUND,SETTING_SOUND);
+                            switchNotification3.setChecked(false);
+                            writeSharedPreference("off",SETTING_KEY_VIBRATE,SETTING_VIBRATE);
+
                             //  Toast.makeText(getBaseContext(), "Switch off", Toast.LENGTH_LONG).show();
                         }
                     }
@@ -112,16 +151,68 @@ public class SettingActivity extends AppCompatActivity {
                         Snackbar.make(buttonView, "No Internet Connection", Snackbar.LENGTH_LONG)
                                 .setAction("Action", null).show();
                     }
-
-
-
                 }
-
-
             }
 
 
         });
+
+        //Sound
+        switchNotification2.setOnCheckedChangeListener( new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                String sp_value_sound=readSharedPreference(SETTING_KEY_SOUND,SETTING_SOUND);
+                if(switchNotification2.isChecked())
+                {
+
+                        if(sp_value_sound.equals("") || sp_value_sound.equals("off"))
+                        {
+                            writeSharedPreference("on",SETTING_KEY_SOUND,SETTING_SOUND);
+                            Toast.makeText(getBaseContext(), "SETTING_SOUND on", Toast.LENGTH_LONG).show();
+                        }
+
+                }
+                else
+                {
+
+                        if(sp_value_sound.equals("on"))
+                        {
+                            writeSharedPreference("off",SETTING_KEY_SOUND,SETTING_SOUND);
+                        Toast.makeText(getBaseContext(), "SETTING_KEY_SOUND off", Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                }
+             });
+
+        //Vibrate
+        switchNotification3.setOnCheckedChangeListener( new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                String sp_value_vibrate=readSharedPreference(SETTING_KEY_VIBRATE,SETTING_VIBRATE);
+                if(switchNotification3.isChecked())
+                {
+
+                    if(sp_value_vibrate.equals("") || sp_value_vibrate.equals("off"))
+                    {
+                        writeSharedPreference("on",SETTING_KEY_VIBRATE,SETTING_VIBRATE);
+                        Toast.makeText(getBaseContext(), "SETTING_VIBRATE on", Toast.LENGTH_LONG).show();
+                    }
+
+                }
+                else
+                {
+
+                    if(sp_value_vibrate.equals("on"))
+                    {
+                        writeSharedPreference("off",SETTING_KEY_VIBRATE,SETTING_VIBRATE);
+                        Toast.makeText(getBaseContext(), "SETTING_VIBRATE off", Toast.LENGTH_LONG).show();
+                    }
+                }
+
+            }
+        });
+
     }
     //storing token to mysql server
     private void sendTokenToServer() {
@@ -225,19 +316,19 @@ public class SettingActivity extends AppCompatActivity {
 //        }
 //    }
 
-    public String readSharedPreference()
+    public String readSharedPreference(String key,String s )
     {
-        SharedPreferences sharedPref =getBaseContext().getSharedPreferences("com.applefish.smartshop.SETTING_KEY",MODE_PRIVATE);
+        SharedPreferences sharedPref =getBaseContext().getSharedPreferences(key,MODE_PRIVATE);
         //0 is default_value if no vaule
-        String savedSetting = sharedPref .getString(getString(R.string.saved_setting), "");
+        String savedSetting = sharedPref .getString(s,"");
 
         return savedSetting;
     }
-    public  void  writeSharedPreference(String savedSetting)
+    public  void  writeSharedPreference(String savedSetting,String key,String s )
     {
-        SharedPreferences sharedPref =getBaseContext().getSharedPreferences("com.applefish.smartshop.SETTING_KEY",MODE_PRIVATE);
+        SharedPreferences sharedPref =getBaseContext().getSharedPreferences(key,MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString(getString(R.string.saved_setting), savedSetting);
+        editor.putString(s, savedSetting);
         editor.commit();
     }
 

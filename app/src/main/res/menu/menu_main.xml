@@ -7,12 +7,18 @@
         android:showAsAction="collapseActionView|ifRoom"
         app:actionViewClass="android.support.v7.widget.SearchView" />-->
 
-
+    <item
+        android:id="@+id/searchbtn"
+        android:icon="@drawable/ic_input_extract_action_search"
+        app:showAsAction="ifRoom"
+        android:title="Refresh">
+    </item>
     <item
         android:id="@+id/refresh"
         android:icon="@drawable/ic_menu_refresh"
         app:showAsAction="ifRoom"
         android:title="Refresh">
     </item>
+
 
 </menu>
