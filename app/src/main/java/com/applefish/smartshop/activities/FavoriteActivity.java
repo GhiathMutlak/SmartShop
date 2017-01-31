@@ -325,7 +325,7 @@ public class FavoriteActivity extends AppCompatActivity {
 
 
                                             final TableRow.LayoutParams rlp6 = new TableRow.LayoutParams(
-                                                    TableRow.LayoutParams.MATCH_PARENT,
+                                                   0,
                                                     TableRow.LayoutParams.MATCH_PARENT
                                                     ,1
                                             );

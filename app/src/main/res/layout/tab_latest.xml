@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:id="@+id/progressbar"
+        android:id="@+id/progressbar_latest"
         />
 
     <ScrollView
@@ -18,7 +18,8 @@
         android:id="@+id/latest_scroll"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        >
 
 
         <TableLayout

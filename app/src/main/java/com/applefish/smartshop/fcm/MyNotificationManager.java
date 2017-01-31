@@ -4,6 +4,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -13,11 +14,15 @@ import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 
 import com.applefish.smartshop.R;
+import com.applefish.smartshop.activities.SettingActivity;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import static android.content.Context.MODE_PRIVATE;
+
 /**
  * Created by Amro on 13/01/2017.
  */
@@ -51,7 +56,7 @@ public class MyNotificationManager {
         bigPictureStyle.bigPicture(getBitmapFromURL(url));
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mCtx);
         Notification notification;
-        notification = mBuilder.setSmallIcon(R.mipmap.ic_launcher2).setTicker(title).setWhen(0)
+        notification = mBuilder.setSmallIcon(R.mipmap.ic_launcher2).setTicker(title)
                 .setAutoCancel(true)
                 .setContentIntent(resultPendingIntent)
                 .setContentTitle(title)
@@ -59,13 +64,19 @@ public class MyNotificationManager {
                 .setSmallIcon(R.mipmap.ic_launcher2)
                 .setLargeIcon(BitmapFactory.decodeResource(mCtx.getResources(), R.mipmap.ic_launcher2))
                 .setContentText(message)
-                .setSound(alarmSound)
                 .setWhen(System.currentTimeMillis())
                 .setVisibility(Notification.VISIBILITY_PRIVATE)
-                .setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 })
                 .setLights(Color.GREEN, 3000, 3000)
                 .setShowWhen(true)
                 .build();
+
+        String sp_value_sound= readSharedPreference("com.applefish.smartshop.SETTING_KEY_SOUND","saved setting sound");
+        String sp_value_vibrate=readSharedPreference("com.applefish.smartshop.SETTING_KEY_VIBRATE","saved setting vibrate");
+
+        if(sp_value_vibrate.equals("on"))
+        { notification =mBuilder.setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 }).build();}
+        if(sp_value_sound.equals("on"))
+        { notification =mBuilder.setSound(alarmSound).build();}
 
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
 
@@ -86,21 +97,32 @@ public class MyNotificationManager {
                 );
 
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
+        bigTextStyle.setBigContentTitle(title);
+        bigTextStyle.bigText(message);
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mCtx);
         Notification notification;
-        notification = mBuilder.setSmallIcon(R.mipmap.ic_launcher2).setTicker(title).setWhen(0)
+        notification = mBuilder.setSmallIcon(R.mipmap.ic_launcher2).setTicker(title)
                 .setAutoCancel(true)
                 .setContentIntent(resultPendingIntent)
                 .setContentTitle(title)
                 .setSmallIcon(R.mipmap.ic_launcher2)
+                .setStyle(bigTextStyle)
                 .setLargeIcon(BitmapFactory.decodeResource(mCtx.getResources(), R.mipmap.ic_launcher2))
                 .setContentText(message)
-                .setSound(alarmSound)
+                .setWhen(System.currentTimeMillis())
                 .setVisibility(Notification.VISIBILITY_PRIVATE)
-                .setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 })
                 .setLights(Color.GREEN, 3000, 3000)
                 .setShowWhen(true)
                 .build();
+
+        String sp_value_sound= readSharedPreference("com.applefish.smartshop.SETTING_KEY_SOUND","saved setting sound");
+        String sp_value_vibrate=readSharedPreference("com.applefish.smartshop.SETTING_KEY_VIBRATE","saved setting vibrate");
+
+        if(sp_value_vibrate.equals("on"))
+        { notification =mBuilder.setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 }).build();}
+        if(sp_value_sound.equals("on"))
+        { notification =mBuilder.setSound(alarmSound).build();}
 
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
 
@@ -122,5 +144,14 @@ public class MyNotificationManager {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public String readSharedPreference(String key,String s )
+    {
+        SharedPreferences sharedPref =mCtx.getSharedPreferences(key,MODE_PRIVATE);
+        //0 is default_value if no vaule
+        String savedSetting = sharedPref .getString(s,"");
+
+        return savedSetting;
     }
 }

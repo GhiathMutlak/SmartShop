@@ -41,7 +41,7 @@ public class LatestFragment extends Fragment {
         rootView = inflater.inflate( R.layout.tab_latest, container, false );
 
         if ( MainActivity.latestOffersList.size() > 0 )
-            rootView.findViewById(R.id.progressbar).setVisibility(View.GONE);
+            rootView.findViewById(R.id.progressbar_latest).setVisibility(View.GONE);
 
         MainActivity.latestOffersCoversList.clear();
 
@@ -72,6 +72,9 @@ public class LatestFragment extends Fragment {
         final TableLayout mTlayout = (TableLayout)rootView.findViewById(R.id.latest_table);
         final TableRow[] tr = {new TableRow(getContext())};
 
+        final Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(new Runnable() {
+            public void run() {
         Thread setupTab2 = new Thread() {
 
             @Override
@@ -286,7 +289,10 @@ public class LatestFragment extends Fragment {
                         }
                     });
 
-
+//if(i==MainActivity.latestOffersList.size()-1)
+//{rootView.findViewById(R.id.progressbar_latest).setVisibility(View.GONE);
+//    rootView.findViewById(R.id.latest_scroll).setVisibility(View.VISIBLE);
+//}
                 }
 
             }
@@ -300,7 +306,8 @@ public class LatestFragment extends Fragment {
             e.printStackTrace();
         }
 
-
+            }
+        }, 100);
     }
 
 }

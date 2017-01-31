@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -138,7 +139,7 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             protected void onPreExecute()
             {
-                this.dialog.setMessage("Searching....");
+                this.dialog.setMessage("Search.....");
                 this.dialog.show();
             }
             @Override
@@ -163,7 +164,9 @@ public class SearchActivity extends AppCompatActivity {
                     return result;
 
                 }catch(Exception e){
+                    Log.i("getJSONOffers", "Exception: " +e);
                     return null;
+
                 }
 
             }
@@ -185,8 +188,19 @@ public class SearchActivity extends AppCompatActivity {
             }
         }
         GetJSON gj = new GetJSON();
+        String []spilt=query.split(" ");
+        String new_query="";
+        for(int i=0;i<spilt.length;i++)
+        {
+         if(i != spilt.length-1)
+             new_query=spilt[i]+","+new_query;
+            else
+             new_query=new_query+spilt[i];
+        }
+
+        String full_url=url+"/?search="+new_query;
         if(check)
-            gj.execute(url+"/?search="+query);
+            gj.execute(full_url);
         else
         {
             if(!gj.isCancelled())
@@ -250,8 +264,8 @@ public class SearchActivity extends AppCompatActivity {
                                         params.bottomMargin = 5;
                                         tr[0] = new TableRow(getBaseContext());
                                         tr[0].setLayoutParams(params);
-                                        //    tr[0].setBackgroundColor(Color.BLACK);
-                                        tr[0].setGravity(Gravity.CENTER);
+                                          tr[0].setBackgroundColor(Color.BLACK);
+                                      //  tr[0].setGravity(Gravity.CENTER);
 
                                         mTlayout.addView(tr[0]);
 
@@ -259,8 +273,8 @@ public class SearchActivity extends AppCompatActivity {
                                         //  RelativeLayout relativeLayout = new RelativeLayout(getBaseContext());
                                         LinearLayout linearLayout = new LinearLayout(getBaseContext());
                                         linearLayout.setOrientation(LinearLayout.VERTICAL);
-                                        linearLayout.setGravity(Gravity.CENTER);
-                                        // linearLayout.setBackgroundColor(Color.GREEN);
+                                       // linearLayout.setGravity(Gravity.CENTER);
+                                      // linearLayout.setBackgroundColor(Color.GREEN);
 
 
                                         TextView title = new TextView(getBaseContext());
@@ -310,11 +324,17 @@ public class SearchActivity extends AppCompatActivity {
 
 
                                         final TableRow.LayoutParams rlp6 = new TableRow.LayoutParams(
-                                                TableRow.LayoutParams.MATCH_PARENT,
+                                                0,
                                                 TableRow.LayoutParams.MATCH_PARENT
                                                 ,1
                                         );
                                         rlp6.gravity= Gravity.CENTER;
+
+                                        final LinearLayout.LayoutParams rlp7 = new TableRow.LayoutParams(
+                                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                                LinearLayout.LayoutParams.WRAP_CONTENT
+                                            ,1
+                                        );
 
                                         //set layout params
                                         linearLayout.setLayoutParams(rlp6);
@@ -323,7 +343,7 @@ public class SearchActivity extends AppCompatActivity {
                                         numOfPages.setLayoutParams(rlp3);
                                         title.setLayoutParams(rlp5);
 
-                                        tr[0].setBackgroundResource(R.drawable.mybutton_background);
+                                       tr[0].setBackgroundResource(R.drawable.mybutton_background);
                                         tr[0].setAddStatesFromChildren(true); // <<<<  this line is the best in the world
 
 
@@ -331,11 +351,18 @@ public class SearchActivity extends AppCompatActivity {
 
                                         LinearLayout l4=new LinearLayout(getBaseContext());
                                         l4.setOrientation(LinearLayout.HORIZONTAL);
-                                        // l4.setBackgroundColor(Color.RED);
+                                        l4.setLayoutParams(rlp7);
+                                         //l4.setBackgroundColor(Color.RED);
+
+                                        LinearLayout l5=new LinearLayout(getBaseContext());
+                                        l5.setOrientation(LinearLayout.HORIZONTAL);
+                                        l5.setLayoutParams(rlp7);
+                                       // l5.setBackgroundColor(Color.YELLOW);
                                         l4.setLayoutParams(rlp4);
                                         l4.addView(date);
                                         l4.addView(numOfPages);
-                                        linearLayout.addView(title);
+                                        l5.addView(title);
+                                        linearLayout.addView(l5);
                                         linearLayout.addView(l4);
 
                                         tr[0].addView(linearLayout);

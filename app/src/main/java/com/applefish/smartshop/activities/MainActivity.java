@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -22,6 +23,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -91,36 +93,48 @@ public class MainActivity extends AppCompatActivity
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Associate searchable configuration with the SearchView
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        final SearchView searchView = (SearchView) findViewById(R.id.search);
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-
+                FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onQueryTextSubmit(String query) {
-                if ( ConnectChecked.isNetworkAvailable( getBaseContext() ) &&
-                        ConnectChecked.isOnline() ) {
-                Intent searchIntent = new Intent();
-                searchIntent.setClass( getBaseContext(), SearchActivity.class );
-                searchIntent.putExtra( SearchManager.QUERY , query);
-                searchIntent.setAction( Intent.ACTION_SEARCH );
-                startActivity(searchIntent);
-                return false;
-                } else {
-                    Snackbar.make(toolbar, "No Internet Connection", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                }
-                return false;
-
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
+            public void onClick(View view) {
+                Intent searchagent = new Intent();
+                searchagent.setClass(getBaseContext(), SearchAgent.class);
+                startActivity(searchagent);
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
             }
         });
+
+//        // Associate searchable configuration with the SearchView
+//        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+//        final SearchView searchView = (SearchView) findViewById(R.id.search);
+//        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+//
+//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//
+//            @Override
+//            public boolean onQueryTextSubmit(String query) {
+//                if ( ConnectChecked.isNetworkAvailable( getBaseContext() ) &&
+//                        ConnectChecked.isOnline() ) {
+//                Intent searchIntent = new Intent();
+//                searchIntent.setClass( getBaseContext(), SearchActivity.class );
+//                searchIntent.putExtra( SearchManager.QUERY , query);
+//                searchIntent.setAction( Intent.ACTION_SEARCH );
+//                startActivity(searchIntent);
+//                return false;
+//                } else {
+//                    Snackbar.make(toolbar, "No Internet Connection", Snackbar.LENGTH_LONG)
+//                            .setAction("Action", null).show();
+//                }
+//                return false;
+//
+//            }
+//
+//            @Override
+//            public boolean onQueryTextChange(String newText) {
+//                return false;
+//            }
+//        });
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -274,6 +288,11 @@ public class MainActivity extends AppCompatActivity
         switch (item.getItemId()) {
             case R.id.refresh:
                 actionRefresh();
+                return true;
+            case R.id.searchbtn:
+                Intent searchagent = new Intent();
+                searchagent.setClass(getBaseContext(), SearchAgent.class);
+                startActivity(searchagent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
