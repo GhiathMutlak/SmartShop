@@ -49,7 +49,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class FavoriteActivity extends AppCompatActivity {
+public class  FavoriteActivity extends AppCompatActivity {
     private static final String TAG_NAME = "storeName";
     private static final int MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE = 0;
     private static final int MY_PERMISSIONS_READ_PHONE_STATE = 0;

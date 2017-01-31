@@ -160,7 +160,7 @@ public class MainActivity extends AppCompatActivity
         getData = new Thread(){
             @Override
             public void run() {
-                getJSON(  );
+                getJSON( true );
             }
         };
 
@@ -289,11 +289,11 @@ public class MainActivity extends AppCompatActivity
             case R.id.refresh:
                 actionRefresh();
                 return true;
-            case R.id.searchbtn:
-                Intent searchagent = new Intent();
-                searchagent.setClass(getBaseContext(), SearchAgent.class);
-                startActivity(searchagent);
-                return true;
+//            case R.id.searchbtn:
+//                Intent searchagent = new Intent();
+//                searchagent.setClass(getBaseContext(), SearchAgent.class);
+//                startActivity(searchagent);
+//                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -340,7 +340,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void getJSON (  ) {
+    private void getJSON ( boolean check ) {
 
 
         class GetStores extends AsyncTask<String, Void, String> {
@@ -468,15 +468,28 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
+
         GetStores getStores = new GetStores();
-        getStores.execute( STORES_URL );
-
         GetMostViewed getMostViewed = new GetMostViewed( );
-        getMostViewed.execute( MOST_VIEWED_URL );
-
         GetLatest getLatest = new GetLatest();
-        getLatest.execute( LATEST_URL );
 
+            if (check) {
+                getStores.execute( STORES_URL );
+                getMostViewed.execute( MOST_VIEWED_URL );
+                getLatest.execute( LATEST_URL );
+            }
+            else {
+
+                if( !getStores.isCancelled() )
+                    getStores.cancel( true );
+
+                if( !getMostViewed.isCancelled() )
+                    getMostViewed.cancel( true );
+
+                if( !getLatest.isCancelled() )
+                    getLatest.cancel( true );
+
+            }
 
 
     }
@@ -640,10 +653,10 @@ public class MainActivity extends AppCompatActivity
             protected void onPostExecute(Bitmap bitmap) {
 
                 super.onPostExecute(bitmap);
-
-                Store store = storesList.get( index );
+                if(storesList.size()>0)
+                {  Store store = storesList.get( index );
                 store.setLogo(bitmap);
-                MainActivity.setStoreBitmap(index);
+                MainActivity.setStoreBitmap(index);}
                 Log.i("post Execute", "Call # : "+index );
 
             }
@@ -695,10 +708,10 @@ public class MainActivity extends AppCompatActivity
             protected void onPostExecute(Bitmap bitmap) {
 
                 super.onPostExecute(bitmap);
-
-                Offer offer = latestOffersList.get( index );
+            if(latestOffersList.size()>0)
+            {Offer offer = latestOffersList.get( index );
                 offer.setCover(bitmap);
-                MainActivity.setOffersBitmap(index,"latest");
+                MainActivity.setOffersBitmap(index,"latest");}
                 Log.i("post Execute", "Call # : "+index );
 
             }
@@ -750,10 +763,10 @@ public class MainActivity extends AppCompatActivity
             protected void onPostExecute(Bitmap bitmap) {
 
                 super.onPostExecute(bitmap);
-
-                Offer offer = mostViewedList.get( index );
+                if(mostViewedList.size()>0)
+                {  Offer offer = mostViewedList.get( index );
                 offer.setCover(bitmap);
-                MainActivity.setOffersBitmap(index,"mostViewed");
+                MainActivity.setOffersBitmap(index,"mostViewed");}
                 Log.i("post Execute", "Call # : "+index );
 
             }
@@ -768,8 +781,8 @@ public class MainActivity extends AppCompatActivity
 
         // RelativeLayout  Params  apply on child (imageButton ) when on click
         final RelativeLayout.LayoutParams rlp4 = new RelativeLayout.LayoutParams(
-                200,
-                200
+                300,
+                300
         );
         rlp4.addRule(RelativeLayout.CENTER_HORIZONTAL);
         rlp4.addRule(RelativeLayout.CENTER_VERTICAL);
@@ -815,6 +828,8 @@ public class MainActivity extends AppCompatActivity
         if ( ConnectChecked.isNetworkAvailable( getBaseContext() ) &&
                 ConnectChecked.isOnline() ) {
 
+            getJSON( false );
+
             runOnUiThread(new Runnable() {
                 public void run() {
                     Log.i("onRefresh "," Refreshing ......");
@@ -840,7 +855,7 @@ public class MainActivity extends AppCompatActivity
                     Thread refresh = new Thread(){
                         @Override
                         public void run() {
-                            getJSON(  );
+                            getJSON( true );
                         }
                     };
 

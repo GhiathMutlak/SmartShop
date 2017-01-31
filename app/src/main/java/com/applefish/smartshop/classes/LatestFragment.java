@@ -72,9 +72,10 @@ public class LatestFragment extends Fragment {
         final TableLayout mTlayout = (TableLayout)rootView.findViewById(R.id.latest_table);
         final TableRow[] tr = {new TableRow(getContext())};
 
-        final Handler handler = new Handler(Looper.getMainLooper());
-        handler.postDelayed(new Runnable() {
-            public void run() {
+//        final Handler handler = new Handler(Looper.getMainLooper());
+//        handler.postDelayed(new Runnable() {
+//            public void run() {
+
         Thread setupTab2 = new Thread() {
 
             @Override
@@ -135,11 +136,11 @@ public class LatestFragment extends Fragment {
                     offerCover.setPadding(20,20,20,20);
                     // TableRow  Params  apply on child (RelativeLayout)
                     TableRow.LayoutParams rlp = new TableRow.LayoutParams(0,
-                          350
+                          450
                             ,40 );
 
                     TableRow.LayoutParams rlp2 = new TableRow.LayoutParams(0,
-                            350
+                            450
                             ,60);
                     rlp2.gravity=Gravity.CENTER;
 
@@ -307,7 +308,7 @@ public class LatestFragment extends Fragment {
         }
 
             }
-        }, 100);
-    }
+//        }, 100);
+//    }
 
 }

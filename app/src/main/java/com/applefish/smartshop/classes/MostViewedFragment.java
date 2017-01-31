@@ -129,11 +129,11 @@ public class MostViewedFragment extends Fragment {
                     offerCover.setPadding(20,20,20,20);
                     // TableRow  Params  apply on child (RelativeLayout)
                     TableRow.LayoutParams rlp = new TableRow.LayoutParams(0,
-                            350
+                            450
                             ,40 );
 
                     TableRow.LayoutParams rlp2 = new TableRow.LayoutParams(0,
-                            350
+                            450
                             ,60);
                     rlp2.gravity=Gravity.CENTER;
 

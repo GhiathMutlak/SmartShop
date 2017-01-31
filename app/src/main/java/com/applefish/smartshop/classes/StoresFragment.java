@@ -86,7 +86,7 @@ public class StoresFragment extends Fragment {
             final ImageButton storeLogo = new ImageButton(getContext());
 
             // TableRow  Params  apply on child (RelativeLayout)
-            TableRow.LayoutParams rlp = new TableRow.LayoutParams(250, 250, 1f);
+            TableRow.LayoutParams rlp = new TableRow.LayoutParams(350, 350, 1f);
             rlp.rightMargin = 7;
             rlp.leftMargin = 7;
             rlp.topMargin = 7;
