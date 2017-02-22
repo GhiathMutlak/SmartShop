@@ -17,6 +17,7 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -168,7 +169,7 @@ public class SettingActivity extends AppCompatActivity {
                         if(sp_value_sound.equals("") || sp_value_sound.equals("off"))
                         {
                             writeSharedPreference("on",SETTING_KEY_SOUND,SETTING_SOUND);
-                            Toast.makeText(getBaseContext(), "SETTING_SOUND on", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getBaseContext(), "SOUND ON", Toast.LENGTH_SHORT).show();
                         }
 
                 }
@@ -178,7 +179,7 @@ public class SettingActivity extends AppCompatActivity {
                         if(sp_value_sound.equals("on"))
                         {
                             writeSharedPreference("off",SETTING_KEY_SOUND,SETTING_SOUND);
-                        Toast.makeText(getBaseContext(), "SETTING_KEY_SOUND off", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getBaseContext(), "SOUND OFF", Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -196,7 +197,7 @@ public class SettingActivity extends AppCompatActivity {
                     if(sp_value_vibrate.equals("") || sp_value_vibrate.equals("off"))
                     {
                         writeSharedPreference("on",SETTING_KEY_VIBRATE,SETTING_VIBRATE);
-                        Toast.makeText(getBaseContext(), "SETTING_VIBRATE on", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getBaseContext(), "VIBRATE ON", Toast.LENGTH_SHORT).show();
                     }
 
                 }
@@ -206,7 +207,7 @@ public class SettingActivity extends AppCompatActivity {
                     if(sp_value_vibrate.equals("on"))
                     {
                         writeSharedPreference("off",SETTING_KEY_VIBRATE,SETTING_VIBRATE);
-                        Toast.makeText(getBaseContext(), "SETTING_VIBRATE off", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getBaseContext(), "VIBRATE OFF", Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -266,7 +267,7 @@ public class SettingActivity extends AppCompatActivity {
     private void deleteTokenToServer() {
         progressDialog = new ProgressDialog(this);
         // progressDialog.setMessage("Registering Device...");
-        progressDialog.setMessage("Notification  Switch...");
+        progressDialog.setMessage("Notification switch.....");
         progressDialog.show();
 
         final String token = SharedPrefManager.getInstance(this).getDeviceToken();

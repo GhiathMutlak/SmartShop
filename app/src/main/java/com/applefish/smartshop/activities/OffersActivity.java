@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -79,6 +80,7 @@ public class OffersActivity extends AppCompatActivity
 
     final static String Key = "com.applefish.smartshop.PdfViewer";
     final static String Key2 = "com.applefish.smartshop.IDOffer";
+    final static String Key3= "com.applefish.smartshop.NUMOFPAGE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,8 +115,7 @@ public class OffersActivity extends AppCompatActivity
         offersList = new ArrayList<>();
         offersCoversList = new ArrayList<>();
 
-        if (ConnectChecked.isNetworkAvailable(getBaseContext()) &&
-                ConnectChecked.isOnline()) {
+        if (ConnectChecked.isNetworkAvailable(getBaseContext())) {
         Thread getData = new Thread(){
             @Override
             public void run() {
@@ -128,17 +129,28 @@ public class OffersActivity extends AppCompatActivity
                     .setAction("Action", null).show();
         }
 
+//        int permissionCheckWriteExternalStorage = ContextCompat.checkSelfPermission(
+//                OffersActivity.this,
+//                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+//        int permissionCheckReadPhoneState = ContextCompat.checkSelfPermission(OffersActivity.this,
+//                Manifest.permission.READ_PHONE_STATE);
+//
+//        if ( permissionCheckWriteExternalStorage != PackageManager.PERMISSION_GRANTED ||
+//                permissionCheckReadPhoneState != PackageManager.PERMISSION_GRANTED ) {
+//
+//            ActivityCompat.requestPermissions(OffersActivity.this,
+//                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE},
+//                    MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE);
+//
+//        }
         int permissionCheckWriteExternalStorage = ContextCompat.checkSelfPermission(
                 OffersActivity.this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        int permissionCheckReadPhoneState = ContextCompat.checkSelfPermission(OffersActivity.this,
-                Manifest.permission.READ_PHONE_STATE);
 
-        if ( permissionCheckWriteExternalStorage != PackageManager.PERMISSION_GRANTED ||
-                permissionCheckReadPhoneState != PackageManager.PERMISSION_GRANTED ) {
+        if ( permissionCheckWriteExternalStorage != PackageManager.PERMISSION_GRANTED  ) {
 
             ActivityCompat.requestPermissions(OffersActivity.this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE},
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE);
 
         }
@@ -177,7 +189,7 @@ public class OffersActivity extends AppCompatActivity
         } else if (id == R.id.nav_share) {
             Intent shareIntent = new Intent();
             shareIntent.setAction(Intent.ACTION_SEND);
-            shareIntent.putExtra(Intent.EXTRA_TEXT,"DownLoad Smart Shopp UAE Android App To Know Before Shop -------URL for App in AppStore-----");
+            shareIntent.putExtra(Intent.EXTRA_TEXT,getString(R.string.share_text));
             shareIntent.setType("text/plain");
             startActivity(shareIntent);
         } else if (id == R.id.nav_help) {
@@ -189,6 +201,17 @@ public class OffersActivity extends AppCompatActivity
             settings.setClass(getBaseContext(), SettingActivity.class);
             startActivity(settings);
         }
+        else if(id==R.id.nav_rate)
+        {
+            final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
+            try {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+            }
+            catch (android.content.ActivityNotFoundException anfe) {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + appPackageName)));
+            }
+        }
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -221,7 +244,7 @@ public class OffersActivity extends AppCompatActivity
                         sb.append(json+"\n");
                     }
                     result=sb.toString().trim();
-                    Log.i("getJSONOffers", "doInBackground: " +result);
+//                    Log.i("getJSONOffers", "doInBackground: " +result);
                     return result;
 
                 }catch(Exception e){
@@ -346,7 +369,7 @@ public class OffersActivity extends AppCompatActivity
                                     date.setTypeface(null, Typeface.BOLD);
 
                                     TextView numOfPages = new TextView(getBaseContext());
-                                    numOfPages.setText( offersList.get(i).getNumberOfPages()+"Pages");
+                                    numOfPages.setText( offersList.get(i).getNumberOfPages()+" Pages");
                                     numOfPages.setBackgroundResource(R.drawable.customborder3);
                                     numOfPages.setTextSize(14);
                                     numOfPages.setTextColor(Color.WHITE);
@@ -359,11 +382,11 @@ public class OffersActivity extends AppCompatActivity
                                     offerCover.setPadding(20,20,20,20);
                                     // TableRow  Params  apply on child (RelativeLayout)
                                     TableRow.LayoutParams rlp = new TableRow.LayoutParams(0,
-                                            350
+                                            450
                                             ,40 );
 
                                     TableRow.LayoutParams rlp2 = new TableRow.LayoutParams(0,
-                                            350
+                                            450
                                             ,60);
                                     rlp2.gravity=Gravity.CENTER;
 
@@ -467,7 +490,7 @@ public class OffersActivity extends AppCompatActivity
                                             int idoffer = offersList.get(tableRowId-1200).getId();
                                            // Toast.makeText(getBaseContext(),pdfUrl,Toast.LENGTH_SHORT).show();
                                             Toast.makeText(getBaseContext(),"Please,wait.....",Toast.LENGTH_SHORT).show();
-                                            Log.i("getAllImages", "setOnClickListener: " +pdfUrl);
+//                                            Log.i("getAllImages", "setOnClickListener: " +pdfUrl);
                                             pdfViewer.putExtra(Key,pdfUrl);
                                             pdfViewer.putExtra(Key2,idoffer);
                                             pdfViewer.setClass( getBaseContext(), PdfViewerActivity.class );
@@ -484,11 +507,13 @@ public class OffersActivity extends AppCompatActivity
                                             int Cover = v.getId();
                                             String pdfUrl = offersList.get(Cover-2200).getPDF_URL();
                                             int idoffer = offersList.get(Cover-2200).getId();
+                                            int numofpage=offersList.get(Cover-2200).getNumberOfPages();
                                          //   Toast.makeText(getBaseContext(),pdfUrl,Toast.LENGTH_SHORT).show();
                                             Toast.makeText(getBaseContext(),"Please,wait.....",Toast.LENGTH_SHORT).show();
-                                            Log.i("getAllImages", "setOnClickListener: " +pdfUrl);
+//                                            Log.i("getAllImages", "setOnClickListener: " +pdfUrl);
                                             pdfViewer.putExtra(Key,pdfUrl);
                                             pdfViewer.putExtra(Key2,idoffer);
+                                            pdfViewer.putExtra(Key3,numofpage);
                                             pdfViewer.setClass( getBaseContext(), PdfViewerActivity.class );
                                             startActivity( pdfViewer);
 
@@ -520,7 +545,7 @@ public class OffersActivity extends AppCompatActivity
                 }
             }
             else {
-                Toast.makeText(getBaseContext(), "NO thing in DB", Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), "An error occurred", Toast.LENGTH_LONG).show();
             }
 
         } catch (JSONException e) {
@@ -574,7 +599,7 @@ public class OffersActivity extends AppCompatActivity
 
 //                    int status = con.getResponseCode();
 
-                    Log.i("getImage", "URL : " +urlToImage);
+//                    Log.i("getImage", "URL : " +urlToImage);
 
                     image = BitmapFactory.decodeStream(con.getInputStream());
 
@@ -596,7 +621,7 @@ public class OffersActivity extends AppCompatActivity
                 // id-1 because of id starts from 1
                 if(offersList.size()!=0 && offersList.size() > id){
                     Offer offer = offersList.get( id );
-                    Log.i("getImage onPostExecute", "id : " +id);
+//                    Log.i("getImage onPostExecute", "id : " +id);
                     offer.setCover(bitmap);
                     OffersActivity.setImageBitmap(id);}
             }

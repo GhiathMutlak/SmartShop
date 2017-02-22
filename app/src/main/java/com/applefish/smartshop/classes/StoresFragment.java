@@ -145,6 +145,30 @@ public class StoresFragment extends Fragment {
 
             MainActivity.storesLogosList.add(storeLogo);
 
+            if(i == MainActivity.storesList.size()-1)
+            {
+                TextView footer = new TextView(getContext());
+                footer.setText( "Stores \n");
+                // title.setBackgroundResource(R.drawable.customborder4);
+                footer.setTextSize(16);
+                footer.setTextColor(Color.rgb(24, 155, 226));
+                footer.setTypeface(null, Typeface.BOLD);
+                footer.setGravity(Gravity.CENTER);
+                TableLayout.LayoutParams params2 = new TableLayout.LayoutParams(0,
+                        450,1);
+                params2.rightMargin = 25;
+                params2.leftMargin = 25;
+                params2.topMargin = 5;
+                params2.bottomMargin = 5;
+                params2.gravity=Gravity.CENTER;
+                TableRow trstore = new TableRow(getContext());
+                trstore.setGravity(Gravity.CENTER);
+                trstore.setLayoutParams(params2);
+                //tr[0].setBackgroundColor(Color.BLACK);
+                trstore.addView(footer);
+                mTlayout.addView(trstore);
+            }
+
             storeLogo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

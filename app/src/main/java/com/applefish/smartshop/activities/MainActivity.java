@@ -1,22 +1,30 @@
 package com.applefish.smartshop.activities;
 
+import android.Manifest;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -39,12 +47,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+
+import static com.applefish.smartshop.classes.URLTAG.LATEST_URL;
+import static com.applefish.smartshop.classes.URLTAG.MOST_VIEWED_URL;
+import static com.applefish.smartshop.classes.URLTAG.STORES_URL;
 
 
 public class MainActivity extends AppCompatActivity
@@ -60,9 +73,7 @@ public class MainActivity extends AppCompatActivity
     public static final String TAG_NAME = "storeName";
     private static final String TAG_ADD ="logoUrl";
 
-    private static final String STORES_URL = "http://smartshop-uae.org/smartshop/retrivelogo.php";
-    private static final String LATEST_URL = "http://smartshop-uae.org/smartshop/date.php";
-    private static final String MOST_VIEWED_URL = "http://smartshop-uae.org/smartshop/view.php";
+
 
     public static ArrayList<Store> storesList;
     public static ArrayList<Offer> latestOffersList;
@@ -84,6 +95,7 @@ public class MainActivity extends AppCompatActivity
     private ViewPager viewPager;
     static Thread getData;
 
+    private static final int MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -135,6 +147,8 @@ public class MainActivity extends AppCompatActivity
 //                return false;
 //            }
 //        });
+        viewPager = (ViewPager) findViewById(R.id.container);
+        viewPager.setOffscreenPageLimit(2);
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -179,14 +193,25 @@ public class MainActivity extends AppCompatActivity
         tabLayout.addTab(tabLayout.newTab().setText("Stores"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-        viewPager = (ViewPager) findViewById(R.id.container);
-        viewPager.setOffscreenPageLimit(2);
+
 
         runOnUiThread(new Runnable() {
             public void run() {
                 displayViewPagerContent( 0 );
             }
         });
+
+        int permissionCheckWriteExternalStorage = ContextCompat.checkSelfPermission(
+                MainActivity.this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if ( permissionCheckWriteExternalStorage != PackageManager.PERMISSION_GRANTED  ) {
+
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE);
+
+        }
 
     }
 
@@ -229,7 +254,7 @@ public class MainActivity extends AppCompatActivity
 
 
             } catch (Exception e) {
-                Log.i("ddddddddddddddddddddddd", "onCreate: " +e);
+               // Log.i("ddddddddddddddddddddddd", "onCreate: " +e);
             }
 
     }
@@ -244,7 +269,7 @@ public class MainActivity extends AppCompatActivity
             public void onTabSelected(TabLayout.Tab tab) {
                 Pager.setCurrentItem(tab.getPosition());
 
-                Log.i("OnTabSelectedListener","position="+tab.getPosition());
+//                Log.i("OnTabSelectedListener","position="+tab.getPosition());
 
             }
 
@@ -268,7 +293,54 @@ public class MainActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
         } else {
           //  super.onBackPressed();
-                moveTaskToBack(true);
+            AlertDialog.Builder builder=new AlertDialog.Builder(MainActivity.this);
+            builder.setTitle("Exit");
+            builder.setMessage("Are you sure you want to exit?");
+           // builder.setCancelable(false);
+            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int ii) {
+
+                    String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
+                    File folder = new File(extStorageDirectory, "SmartShopOffers");
+                    if(folder.isDirectory())
+                    {
+                        String[] children = folder.list();
+                        for(int i=0;i<children.length;i++)
+                        {
+                            File file=new File(folder,children[i]);
+                            if(file.isFile())
+                                file.delete();
+                        }
+                    }
+                    moveTaskToBack(true);
+
+                }
+            });
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.cancel();
+
+
+                }
+            });
+            builder.setNeutralButton("Rate the app", new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int id) {
+
+                    final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
+                    try {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+                    }
+                    catch (android.content.ActivityNotFoundException anfe) {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + appPackageName)));
+                    }
+
+                }});
+            AlertDialog alert=builder.create();
+            alert.show();
+
         }
 
     }
@@ -316,7 +388,7 @@ public class MainActivity extends AppCompatActivity
 
             Intent shareIntent = new Intent();
             shareIntent.setAction(Intent.ACTION_SEND);
-            shareIntent.putExtra(Intent.EXTRA_TEXT,"DownLoad Smart Shopp UAE Android App To Know Before Shop -------URL for App in AppStore-----");
+            shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_text));
             shareIntent.setType("text/plain");
             startActivity(shareIntent);
 
@@ -332,6 +404,16 @@ public class MainActivity extends AppCompatActivity
             settings.setClass(getBaseContext(), SettingActivity.class);
             startActivity(settings);
 
+        }
+        else if(id==R.id.nav_rate)
+        {
+            final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
+            try {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+            }
+            catch (android.content.ActivityNotFoundException anfe) {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + appPackageName)));
+            }
         }
 
 
@@ -361,7 +443,7 @@ public class MainActivity extends AppCompatActivity
                     int status = con.getResponseCode();
 
 
-                    Log.i("GetStores", "doInBackground: " +status);
+//                    Log.i("GetStores", "doInBackground: " +status);
 
                     bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
                     String json;
@@ -403,7 +485,7 @@ public class MainActivity extends AppCompatActivity
 
                     int status = con.getResponseCode();
 
-                    Log.i("GetLatest", "doInBackground: " +status);
+//                    Log.i("GetLatest", "doInBackground: " +status);
 
                     bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
                     String json;
@@ -444,7 +526,7 @@ public class MainActivity extends AppCompatActivity
 
                     int status = con.getResponseCode();
 
-                    Log.i("GetMost", "doInBackground: " +status);
+//                    Log.i("GetMost", "doInBackground: " +status);
 
                     bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
                     String json;
@@ -521,7 +603,7 @@ public class MainActivity extends AppCompatActivity
                     Toast.makeText(getBaseContext(), "NO Stores", Toast.LENGTH_LONG).show();
                 }
             } else {
-                Toast.makeText(getBaseContext(), "NO thing in DB", Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), "An error occurred", Toast.LENGTH_LONG).show();
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -633,7 +715,7 @@ public class MainActivity extends AppCompatActivity
                             url = new URL(urlToImage);
                             HttpURLConnection con = (HttpURLConnection) url.openConnection();
 
-                            Log.i("getImage", "URL : " + urlToImage);
+//                            Log.i("getImage", "URL : " + urlToImage);
 
                             image = BitmapFactory.decodeStream(con.getInputStream());
                             storesBitmapsList.add(image);
@@ -657,7 +739,7 @@ public class MainActivity extends AppCompatActivity
                 {  Store store = storesList.get( index );
                 store.setLogo(bitmap);
                 MainActivity.setStoreBitmap(index);}
-                Log.i("post Execute", "Call # : "+index );
+//                Log.i("post Execute", "Call # : "+index );
 
             }
         }
@@ -688,7 +770,7 @@ public class MainActivity extends AppCompatActivity
                         url = new URL(urlToImage);
                         HttpURLConnection con = (HttpURLConnection) url.openConnection();
 
-                        Log.i("getImage", "URL : " + urlToImage);
+//                        Log.i("getImage", "URL : " + urlToImage);
 
                         image = BitmapFactory.decodeStream(con.getInputStream());
                         latestBitmapsList.add(image);
@@ -712,7 +794,7 @@ public class MainActivity extends AppCompatActivity
             {Offer offer = latestOffersList.get( index );
                 offer.setCover(bitmap);
                 MainActivity.setOffersBitmap(index,"latest");}
-                Log.i("post Execute", "Call # : "+index );
+//                Log.i("post Execute", "Call # : "+index );
 
             }
         }
@@ -743,7 +825,7 @@ public class MainActivity extends AppCompatActivity
                         url = new URL(urlToImage);
                         HttpURLConnection con = (HttpURLConnection) url.openConnection();
 
-                        Log.i("getImage", "URL : " + urlToImage);
+//                        Log.i("getImage", "URL : " + urlToImage);
 
                         image = BitmapFactory.decodeStream(con.getInputStream());
                         mostViewedBitmapsList.add(image);
@@ -767,7 +849,7 @@ public class MainActivity extends AppCompatActivity
                 {  Offer offer = mostViewedList.get( index );
                 offer.setCover(bitmap);
                 MainActivity.setOffersBitmap(index,"mostViewed");}
-                Log.i("post Execute", "Call # : "+index );
+//                Log.i("post Execute", "Call # : "+index );
 
             }
         }
@@ -832,7 +914,7 @@ public class MainActivity extends AppCompatActivity
 
             runOnUiThread(new Runnable() {
                 public void run() {
-                    Log.i("onRefresh "," Refreshing ......");
+//                    Log.i("onRefresh "," Refreshing ......");
 
                     int position = tabLayout.getSelectedTabPosition();
 

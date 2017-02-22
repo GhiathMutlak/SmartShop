@@ -32,6 +32,7 @@ public class MostViewedFragment extends Fragment {
 
     final static String Key = "com.applefish.smartshop.PdfViewer";
     final static String Key2 = "com.applefish.smartshop.IDOffer";
+    final static String Key3= "com.applefish.smartshop.NUMOFPAGE";
 
     private View rootView;
 
@@ -116,7 +117,7 @@ public class MostViewedFragment extends Fragment {
                     date.setTypeface(null, Typeface.BOLD);
 
                     TextView numOfPages = new TextView(getContext());
-                    numOfPages.setText( MainActivity.mostViewedList.get(i).getNumberOfPages()+"Pages" );
+                    numOfPages.setText( MainActivity.mostViewedList.get(i).getNumberOfPages()+" Pages" );
                     numOfPages.setBackgroundResource(R.drawable.customborder3);
                     numOfPages.setTextSize(14);
                     numOfPages.setTextColor(Color.WHITE);
@@ -243,6 +244,29 @@ public class MostViewedFragment extends Fragment {
                     tr[0].addView(linearLayout);
 
                     MainActivity.mostViewedCoversList.add(offerCover);
+                    if(i == MainActivity.mostViewedList.size()-1)
+                    {
+                        TextView footer = new TextView(getContext());
+                        footer.setText( "Most viewed offers \n");
+                        // title.setBackgroundResource(R.drawable.customborder4);
+                        footer.setTextSize(16);
+                        footer.setTextColor(Color.rgb(24, 155, 226));
+                        footer.setTypeface(null, Typeface.BOLD);
+                        footer.setGravity(Gravity.CENTER);
+                        TableLayout.LayoutParams params2 = new TableLayout.LayoutParams(0,
+                                450,1);
+                        params2.rightMargin = 25;
+                        params2.leftMargin = 25;
+                        params2.topMargin = 5;
+                        params2.bottomMargin = 5;
+                        params2.gravity=Gravity.CENTER;
+                        TableRow tr = new TableRow(getContext());
+                        tr.setGravity(Gravity.CENTER);
+                        tr.setLayoutParams(params2);
+                        //tr[0].setBackgroundColor(Color.BLACK);
+                        tr.addView(footer);
+                        mTlayout.addView(tr);
+                    }
 
                     tr[0].setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -254,7 +278,7 @@ public class MostViewedFragment extends Fragment {
                             int idoffer = MainActivity.mostViewedList.get(tableRowId-1100).getId();
                            // Toast.makeText(getContext(),pdfUrl,Toast.LENGTH_SHORT).show();
                             Toast.makeText(getContext(),"Please,wait.....",Toast.LENGTH_SHORT).show();
-                            Log.i("getAllImages", "setOnClickListener: " +pdfUrl);
+//                            Log.i("getAllImages", "setOnClickListener: " +pdfUrl);
                             pdfViewer.putExtra(Key,pdfUrl);
                             pdfViewer.putExtra(Key2,idoffer);
                             pdfViewer.setClass( getContext(), PdfViewerActivity.class );
@@ -271,11 +295,13 @@ public class MostViewedFragment extends Fragment {
                             int Cover = v.getId();
                             String pdfUrl = MainActivity.mostViewedList.get(Cover-2100).getPDF_URL();
                             int idoffer = MainActivity.mostViewedList.get(Cover-2100).getId();
+                            int numofpage=MainActivity.mostViewedList.get(Cover-2100).getNumberOfPages();
                            // Toast.makeText(getContext(),pdfUrl,Toast.LENGTH_SHORT).show();
                             Toast.makeText(getContext(),"Please,wait.....",Toast.LENGTH_SHORT).show();
-                            Log.i("getAllImages", "setOnClickListener: " +pdfUrl);
+//                            Log.i("getAllImages", "setOnClickListener: " +pdfUrl);
                             pdfViewer.putExtra(Key,pdfUrl);
                             pdfViewer.putExtra(Key2,idoffer);
+                            pdfViewer.putExtra(Key3,numofpage);
                             pdfViewer.setClass( getContext(), PdfViewerActivity.class );
                             startActivity( pdfViewer);
 
