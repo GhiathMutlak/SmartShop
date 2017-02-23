@@ -19,12 +19,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         if (remoteMessage.getData().size() > 0) {
-            Log.e(TAG, "Data Payload: " + remoteMessage.getData().toString());
+         //   Log.e(TAG, "Data Payload: " + remoteMessage.getData().toString());
             try {
                 JSONObject json = new JSONObject(remoteMessage.getData().toString());
                 sendPushNotification(json);
             } catch (Exception e) {
-                Log.e(TAG, "Exception: " + e.getMessage());
+               // Log.e(TAG, "Exception: " + e.getMessage());
             }
         }
     }
@@ -34,7 +34,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     //firebase cloud messaging
     private void sendPushNotification(JSONObject json) {
         //optionally we can display the json into log
-        Log.e(TAG, "Notification JSON " + json.toString());
+     //   Log.e(TAG, "Notification JSON " + json.toString());
         try {
             //getting the json data
             JSONObject data = json.getJSONObject("data");
@@ -60,9 +60,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 mNotificationManager.showBigNotification(title, message, imageUrl, intent);
             }
         } catch (JSONException e) {
-            Log.e(TAG, "Json Exception: " + e.getMessage());
+          //  Log.e(TAG, "Json Exception: " + e.getMessage());
         } catch (Exception e) {
-            Log.e(TAG, "Exception: " + e.getMessage());
+           // Log.e(TAG, "Exception: " + e.getMessage());
         }
     }
 

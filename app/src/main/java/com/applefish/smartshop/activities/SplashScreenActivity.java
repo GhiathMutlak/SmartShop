@@ -67,7 +67,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                         });
                     }
                 } catch (InterruptedException e) {
-                    Log.d("yes","connectThread noooooooooooooooooo" +e);
+                    //Log.d("yes","connectThread noooooooooooooooooo" +e);
                 }
             }
         };
@@ -121,7 +121,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                             }
 
                         } catch (Exception e) {
-                            Log.d("yes","splashTimerTask noooooooooooooooooo");
+//                            Log.d("yes","splashTimerTask noooooooooooooooooo");
                         }
                     }
                 }, 3000);

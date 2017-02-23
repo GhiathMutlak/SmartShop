@@ -13,6 +13,7 @@
     <string name="favourites">Favourites</string>
     <string name="share">Share</string>
     <string name="help">About and Help</string>
+    <string name="rate">Rate</string>
     <string name="title_activity_main2">Main2Activity</string>
 
     <string name="action_settings">Settings</string>
@@ -40,10 +41,22 @@
     <string name="saved_setting_sound">saved setting sound</string>
     <string name="saved_setting_vibrate">saved setting vibrate</string>
     <string name="search_hint">Search here</string>
-    <string name="title_activity_search_agent">Search agent</string>
+    <string name="title_activity_search_agent">Search</string>
+    <string name="share_text"> DownLoad Smart Shopp UAE Android App To Know Before Shop .Market url: play.google.com/store/apps/details?id=com.applefish.smartshop </string>
+
     <array name="Category">
         <item>cat1</item>
         <item>cat2</item>
+        <item>cat3</item>
+        <item>cat4</item>
+        <item>cat5</item>
+        <item>cat6</item>
+        <item>cat7</item>
+        <item>cat8</item>
+        <item>cat9</item>
+        <item>cat10</item>
+        <item>cat11</item>
+        <item>cat12</item>
     </array>
     <array name="item1">
         <item>cat1 item1</item>
@@ -58,4 +71,75 @@
         <item>cat2 item4</item>
         <item>all</item>
     </array>
+    <array name="item3">
+        <item>cat3 item1</item>
+        <item>cat3 item2</item>
+        <item>cat3 item3</item>
+        <item>cat3 item4</item>
+        <item>all</item>
+    </array>
+    <array name="item4">
+        <item>cat4 item1</item>
+        <item>cat4 item2</item>
+        <item>cat4 item3</item>
+        <item>cat4 item4</item>
+        <item>all</item>
+    </array>
+    <array name="item5">
+        <item>cat5 item1</item>
+        <item>cat5 item2</item>
+        <item>cat5 item3</item>
+        <item>cat5 item4</item>
+        <item>all</item>
+    </array>
+    <array name="item6">
+        <item>cat6 item1</item>
+        <item>cat6 item2</item>
+        <item>cat6 item3</item>
+        <item>cat6 item4</item>
+        <item>all</item>
+    </array>
+    <array name="item7">
+        <item>cat7 item1</item>
+        <item>cat7 item2</item>
+        <item>cat7 item3</item>
+        <item>cat7 item4</item>
+        <item>all</item>
+    </array>
+    <array name="item8">
+        <item>cat8 item1</item>
+        <item>cat8 item2</item>
+        <item>cat8 item3</item>
+        <item>cat8 item4</item>
+        <item>all</item>
+    </array>
+    <array name="item9">
+        <item>cat9 item1</item>
+        <item>cat9 item2</item>
+        <item>cat9 item3</item>
+        <item>cat9 item4</item>
+        <item>all</item>
+    </array>
+    <array name="item10">
+        <item>cat10 item1</item>
+        <item>cat10 item2</item>
+        <item>cat10 item3</item>
+        <item>cat10 item4</item>
+        <item>all</item>
+    </array>
+    <array name="item11">
+        <item>cat11 item1</item>
+        <item>cat11 item2</item>
+        <item>cat11 item3</item>
+        <item>cat11 item4</item>
+        <item>all</item>
+    </array>
+    <array name="item12">
+        <item>cat12 item1</item>
+        <item>cat12 item2</item>
+        <item>cat12 item3</item>
+        <item>cat12 item4</item>
+        <item>all</item>
+    </array>
+
 </resources>

@@ -26,6 +26,12 @@
             android:title="@string/settings" />
 
     </group>
+    <group  android:id="@+id/grp5">
+        <item
+            android:id="@+id/nav_rate"
+            android:icon="@android:drawable/ic_menu_edit"
+            android:title="@string/rate" />
+    </group>
 
 
 

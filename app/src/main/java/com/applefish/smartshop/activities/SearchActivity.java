@@ -160,11 +160,11 @@ public class SearchActivity extends AppCompatActivity {
                         sb.append(json+"\n");
                     }
                     result=sb.toString().trim();
-                    Log.i("getJSONOffers", "doInBackground: " +result);
+//                    Log.i("getJSONOffers", "doInBackground: " +result);
                     return result;
 
                 }catch(Exception e){
-                    Log.i("getJSONOffers", "Exception: " +e);
+//                    Log.i("getJSONOffers", "Exception: " +e);
                     return null;
 
                 }
@@ -377,8 +377,9 @@ public class SearchActivity extends AppCompatActivity {
                                                 int tableRowId = ((TableRow)v).getId();
                                                 String pdfUrl = offersList.get(tableRowId-1100).getPDF_URL();
                                                 int idoffer=offersList.get(tableRowId-1100).getId();
-                                                Toast.makeText(getBaseContext(),pdfUrl,Toast.LENGTH_SHORT).show();
-                                                Log.i("getAllImages", "setOnClickListener: " +pdfUrl);
+                                               // Toast.makeText(getBaseContext(),pdfUrl,Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(getBaseContext(),"Please,wait.....",Toast.LENGTH_SHORT).show();
+//                                                Log.i("getAllImages", "setOnClickListener: " +pdfUrl);
                                                 pdfViewer.putExtra(Key,pdfUrl);
                                                 pdfViewer.putExtra(Key2,idoffer);
                                                 pdfViewer.setClass( getBaseContext(), PdfViewerActivity.class );
@@ -413,7 +414,7 @@ public class SearchActivity extends AppCompatActivity {
                 }
             }
             else {
-                Toast.makeText(getBaseContext(), "NO thing in DB", Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), "An error occurred", Toast.LENGTH_LONG).show();
             }
 
         } catch (JSONException e) {

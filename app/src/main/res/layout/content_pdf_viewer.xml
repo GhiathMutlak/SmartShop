@@ -13,7 +13,8 @@
 <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/rel1">
+    android:id="@+id/rel1"
+    android:onClick="VisibleImage">
     <ProgressBar
         android:theme="@style/CircularProgress"
         style="@style/Widget.AppCompat.ProgressBar"
@@ -23,6 +24,17 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         />
+    <TextView
+        android:id="@+id/pagenum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/customborder"
+        android:textColor="#ff0000"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>
     <com.github.barteksc.pdfviewer.PDFView
         android:id="@+id/pdfView"
@@ -30,7 +42,41 @@
         android:layout_height="match_parent"
         android:visibility="invisible"
         android:layout_below="@+id/rel1"
-     />
+        android:onClick="VisibleImage"
+     >
+    </com.github.barteksc.pdfviewer.PDFView>
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+
+        android:src="@drawable/arrowmoreleft"
+        android:layout_marginTop="128dp"
+        android:layout_below="@+id/rel1"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:visibility="invisible"
+        android:layout_centerVertical="true"/>
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/arrowmoreright"
+        android:layout_marginTop="128dp"
+        android:layout_below="@+id/rel1"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:visibility="invisible"
+        android:layout_centerVertical="true"/>
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="125dp"
+        android:layout_height="200dp"
+        android:src="@drawable/pinch_zoom"
+        android:visibility="invisible"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"/>
 
 
 

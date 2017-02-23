@@ -1,6 +1,7 @@
 package com.applefish.smartshop.activities;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -123,20 +124,20 @@ public class  FavoriteActivity extends AppCompatActivity {
            //scrollView.setBackgroundResource(R.drawable.cry_star);
             imageView= (ImageView) findViewById(R.id.image_cry_star);
             imageView.setBackgroundResource(R.drawable.cry_star);
-            Log.i("scrollView", "scrollView" );
+            //Log.i("scrollView", "scrollView" );
         }
         else {
             if (ConnectChecked.isNetworkAvailable(getBaseContext()))
                               {
-                Thread getOfferData = new Thread() {
-                    @Override
-                    public void run() {
-                        super.run();
+//                Thread getOfferData = new Thread() {
+//                    @Override
+//                    public void run() {
+//                        super.run();
                         getJSON(FAV_OFFERS_URL,true);
-                    }
-                };
-
-                getOfferData.start();
+//                    }
+//                };
+//
+//                getOfferData.start();
             } else {
                 Snackbar.make(toolbar, "No Internet Connection", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
@@ -163,7 +164,14 @@ public class  FavoriteActivity extends AppCompatActivity {
 
 
         class GetJSON extends AsyncTask<String, Void, String> {
+            private ProgressDialog dialog=new ProgressDialog(FavoriteActivity.this);
 
+            @Override
+            protected void onPreExecute()
+            {
+                this.dialog.setMessage("Loading.....");
+                this.dialog.show();
+            }
             @Override
             protected String doInBackground(String... params) {
 
@@ -182,7 +190,7 @@ public class  FavoriteActivity extends AppCompatActivity {
                         sb.append(json+"\n");
                     }
                     result=sb.toString().trim();
-                    Log.i("getJSONOffers", "doInBackground: " +result);
+                   // Log.i("getJSONOffers", "doInBackground: " +result);
                     return result;
 
                 }catch(Exception e){
@@ -196,6 +204,14 @@ public class  FavoriteActivity extends AppCompatActivity {
                 super.onPostExecute(result);
                 jsonResult = result;
                 buidlOffersList();
+                if(dialog.isShowing())
+                    dialog.dismiss();
+
+            }
+            @Override
+            protected void onCancelled() {
+                if(dialog.isShowing())
+                    dialog.dismiss();
 
             }
         }
@@ -365,8 +381,9 @@ public class  FavoriteActivity extends AppCompatActivity {
                                                     int tableRowId = ((TableRow)v).getId();
                                                     String pdfUrl = offersList.get(tableRowId-1100).getPDF_URL();
                                                     int idoffer=offersList.get(tableRowId-1100).getId();
-                                                    Toast.makeText(getBaseContext(),pdfUrl,Toast.LENGTH_SHORT).show();
-                                                    Log.i("getAllImages", "setOnClickListener: " +pdfUrl);
+                                                  //  Toast.makeText(getBaseContext(),pdfUrl,Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(getBaseContext(),"Please,wait.....",Toast.LENGTH_SHORT).show();
+                                                   // Log.i("getAllImages", "setOnClickListener: " +pdfUrl);
                                                     pdfViewer.putExtra(Key,pdfUrl);
                                                     pdfViewer.putExtra(Key2,idoffer);
                                                     pdfViewer.setClass( getBaseContext(), PdfViewerActivity.class );
@@ -399,7 +416,7 @@ public class  FavoriteActivity extends AppCompatActivity {
                 }
             }
             else {
-                Toast.makeText(getBaseContext(), "NO thing in DB", Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), "An error occurred", Toast.LENGTH_LONG).show();
             }
 
         } catch (JSONException e) {
